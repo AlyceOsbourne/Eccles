@@ -4,6 +4,7 @@ loaded_entities, loaded_systems = {}, {}
 
 
 class ComponentError(Exception):
+
     def __init__(self, component, message):
         """
         :param component: component that raised the error
@@ -53,12 +54,13 @@ class Entity:
         return {k: v for (k, v) in self.__dict__ if isinstance(v, component_type)}
 
     def __str__(self):
-        return f"{self.__class__.__name__}.{self.__hash__()}: {str({var_name: str(var_data) for (var_name, var_data) in self.__dict__.items()})}"
+        return f"{self.__class__.__name__}.{self.__hash__()}: " \
+               f"{str({var_name: str(var_data) for (var_name, var_data) in self.__dict__.items()})}"
 
 
 class System:
     __slots__ = ('system_id', 'managed_components')
-    managed_components:  list[Component]
+    managed_components: list[Component]
 
     def __init__(self):
         loaded_systems[self.__class__.__name__] = self
@@ -68,12 +70,12 @@ class System:
 
 
 class Rotation(Component):
-    def set(self, rotation=None, rot_x=0, rot_y=0, rot_z=0):
+    def set(self, rotation: tuple[int, int, int] or None = None, rot_x=0, rot_y=0, rot_z=0):
         self.rotation_x, self.rotation_y, self.rotation_z = rotation if rotation else rot_x, rot_y, rot_z
 
     __slots__ = ('rotation_x', 'rotation_y', 'rotation_z')
 
-    def __init__(self, rotation=None, rot_x=0, rot_y=0, rot_z=0):
+    def __init__(self, rotation: tuple[int, int, int] or None = None, rot_x=0, rot_y=0, rot_z=0):
         self.rotation_x, self.rotation_y, self.rotation_z = rotation if rotation else rot_x, rot_y, rot_z
 
     def get(self):
@@ -86,14 +88,14 @@ class Rotation(Component):
 class Position(Component):
     __slots__ = ('x', 'y', 'z')
 
-    def __init__(self, position=None, pos_x=0, pos_y=0, pos_z=0):
+    def __init__(self, position: tuple[int, int, int] or None = None, pos_x=0, pos_y=0, pos_z=0):
         super().__init__()
         self.x, self.y, self.z = position if position else pos_x, pos_y, pos_z
 
     def get(self):
         return self.x, self.y, self.z
 
-    def set(self, position=None, pos_x=0, pos_y=0, pos_z=0):
+    def set(self, position: tuple[int, int, int] or None = None, pos_x=0, pos_y=0, pos_z=0):
         self.x, self.y, self.z = position if position else pos_x, pos_y, pos_z
 
     def __str__(self):
@@ -103,11 +105,11 @@ class Position(Component):
 class Velocity(Component):
     __slots__ = ('velocity_x', 'velocity_y', 'velocity_z')
 
-    def __init__(self, id_, velocity=None, velocity_x=0, velocity_y=0, velocity_z=0):
+    def __init__(self, velocity: tuple[int, int, int] or None = None, velocity_x=0, velocity_y=0, velocity_z=0):
         super().__init__()
         self.velocity_x, self.velocity_y, self.velocity_z = velocity if velocity else velocity_x, velocity_y, velocity_z
 
-    def set(self, id_, velocity=None, velocity_x=0, velocity_y=0, velocity_z=0):
+    def set(self, id_, velocity: tuple[int, int, int] or None = None, velocity_x=0, velocity_y=0, velocity_z=0):
         self.velocity_x, self.velocity_y, self.velocity_z = velocity if velocity else velocity_x, velocity_y, velocity_z
 
     def get(self):
@@ -135,8 +137,3 @@ class Mass(Component):
 
 class MotionSystem(System):
     managed_components = Position, Rotation, Velocity
-
-
-m = MotionSystem()
-print(loaded_entities)
-print(loaded_systems)
