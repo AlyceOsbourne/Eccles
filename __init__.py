@@ -1,7 +1,5 @@
 from abc import abstractmethod
 
-loaded_entities, loaded_systems = {}, {}
-
 
 class ComponentError(Exception):
 
@@ -31,10 +29,7 @@ class Component:
 
 class Entity:
     def __init__(self, *components):
-        self.__dict__.update({k.__class__.__name__: k for (k) in components if isinstance(k, Component)})
-        if self.__class__.__name__ not in loaded_entities.keys():
-            loaded_entities[self.__class__.__name__] = {}
-        loaded_entities[self.__class__.__name__].update({self.__hash__(): self})
+        self.__dict__.update({k.__class__.__name__: k for k in components if isinstance(k, Component)})
 
     def attach_component(self, component):
         if isinstance(component, Component):
@@ -62,11 +57,27 @@ class System:
     __slots__ = ('system_id', 'managed_components')
     managed_components: list[Component]
 
-    def __init__(self):
-        loaded_systems[self.__class__.__name__] = self
-
+    @abstractmethod
     def update(self):
         pass
+
+    a = update
+
+
+class RenderMesh(Component):
+    pass
+
+
+class Animation(Component):
+    pass
+
+
+class Physics(Component):
+    pass
+
+
+class Collider(Component):
+    pass
 
 
 class Rotation(Component):
@@ -135,5 +146,14 @@ class Mass(Component):
         return str(self.mass)
 
 
-class MotionSystem(System):
-    managed_components = Position, Rotation, Velocity
+class PlayerController(Component):
+    pass
+
+
+class Audio(Component):
+    pass
+
+
+class Lifetime(Component):
+    pass
+
