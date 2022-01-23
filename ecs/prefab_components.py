@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from core import Component
-from game_math import Point2, Point3, Vector2, Vector3
+from game_math import Vector
 
 
 #############################################################################
@@ -16,22 +16,22 @@ from game_math import Point2, Point3, Vector2, Vector3
 #################
 @dataclass(slots=True, eq=True)
 class Position(Component):
-    position: Point2 or Point3
+    position: Vector
 
 
 @dataclass(slots=True, eq=True)
 class Rotation(Component):
-    rotation: Vector2 or Vector3
+    rotation: Vector
 
 
 @dataclass(slots=True, eq=True)
 class Velocity(Component):
-    velocity: Vector2 or Vector3
+    velocity: Vector
 
 
 @dataclass(slots=True, eq=True)
 class Mass(Component):
-    mass: int or float = field(default=1.)
+    mass: float = field(default=1.)
 
     @property
     def mass(self):
@@ -61,7 +61,6 @@ class Scale(Component):
     @scale.setter
     def scale(self, scale: tuple[float, float, float]):
         self.scale = scale
-
 
 
 #################
