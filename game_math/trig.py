@@ -42,7 +42,6 @@ class Vector:
     def degrees(self):
         return degrees(self.radians) if self.z == 0 else tuple((degrees(rad) for rad in self.radians))
 
-
     def normalize(self):
         m = self.magnitude
         self.x, self.y, self.z = tuple(a/m for a in self.vec)
@@ -54,19 +53,18 @@ class Vector:
 
     def __add__(self, other):
         if isinstance(other, Vector):
-            x, y, z = tuple(a+b for (a, b) in zip(self.vec, other.vec))
+           x, y, z = tuple(a+b for (a, b) in zip(self.vec, other.vec))
         elif isinstance(other, int) or isinstance(other, float):
             x, y, z = tuple(a+other for a in self.vec)
         else:
             return self
-
         return self.__create__(x, y, z)
 
     def __truediv__(self, other):
         if isinstance(other, self.__class__):
             x, y, z = tuple(a/b if a and b else 0 for (a, b) in zip(self.vec, other.vec))
         elif isinstance(other, float) or isinstance(other, int):
-            x, y, z = tuple(a/other if a and other else 0  for a in self.vec)
+            x, y, z = tuple(a/other if a and other else 0 for a in self.vec)
         else:
             return self
         return self.__create__(x, y, z)
@@ -110,9 +108,15 @@ class Vector:
 
 
 if __name__ == "__main__":
-    vector_1 = Vector(100, 100, 100)
-    vector_2 = Vector(50, 50, 50)
-    vector_3 = vector_1+vector_2
-    vector_4 = vector_1*vector_2
-    vector_5 = vector_1*vector_2
+    vector_1 = Vector(6, 33, 90)
+    vector_2 = Vector(10, 1, 6)
+    print("initial vectors\n\r", vector_1, vector_2)
+    print("addition by vec\n\r", vector_1+vector_2)
+    print("addition by val\n\r", vector_1+10)
+    print("multiplication by vec\n\r", vector_1*vector_2)
+    print("multiplication by val\n\r", vector_1*10)
+    print("division by vec\n\r", vector_1/vector_2)
+    print("division by val\n\r", vector_1/10)
+    print("normalized v1\n\r", vector_1.normalize())
+    print("normalized v2\n\r", vector_2.normalize())
 
