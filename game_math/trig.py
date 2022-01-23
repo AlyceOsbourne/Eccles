@@ -30,7 +30,7 @@ class Vector:
 
     @magnitude.setter
     def magnitude(self, magnitude):
-        self.convert_to_unit()
+        self.normalize()
         self.x *= magnitude
         self.y *= magnitude
         self.z *= magnitude
@@ -72,17 +72,62 @@ class Vector:
     def angle_in_degrees(self):
         return math.degrees(self.angle) if self.z == 0 else tuple((math.degrees(rad) for rad in self.angle))
 
-    def convert_to_unit(self):
+    def normalize(self):
         m = self.magnitude
         self.x /= m
         self.y /= m
         self.z /= m
         return self
 
+    @classmethod
+    def normalized(cls, x, y, z):
+        return cls(x, y, z).normalize()
+
     def __add__(self, other):
-        x = other.x + self.x
-        y = other.y + self.y
-        z = other.z + self.z
+        if isinstance(other, self.__class__):
+            x = other.x + self.x
+            y = other.y + self.y
+            z = other.z + self.z
+        elif isinstance(other, int) or isinstance(other, float):
+            x = self.x + other
+            y = self.y + other
+            z = self.z + other
+        else:
+            return self
+
+        return self.__create__(x, y, z)
+
+    def __truediv__(self, other):
+        if isinstance(other, self.__class__):
+            x = other.x / self.x if other.x and self.x else 0
+            y = other.y / self.y if other.y and self.y else 0
+            z = other.z / self.z if other.z and self.z else 0
+
+        elif isinstance(other, float) or isinstance(other, int):
+            x = self.x / other if self.x and other else 0
+            y = self.y / other if self.y and other else 0
+            z = self.z / other if self.z and other else 0
+
+        else:
+            return self
+
+        return self.__create__(x, y, z)
+
+    def __mul__(self, other):
+
+        if isinstance(other, self.__class__):
+            x = other.x * self.x if other.x and self.x else 0
+            y = other.y * self.y if other.y and self.y else 0
+            z = other.z * self.z if other.z and self.z else 0
+
+        elif isinstance(other, float) or isinstance(other, int):
+            x = self.x * other if other and self.x else 0
+            y = self.y * other if other and self.y else 0
+            z = self.z * other if other and self.z else 0
+
+        else:
+            return self
+
         return self.__create__(x, y, z)
 
     def __repr__(self):
@@ -91,17 +136,17 @@ class Vector:
     def __str__(self):
         out = f'{self.__class__.__name__} ' \
               f'{2 if self.z == 0 else 3}D ' \
-              f'{str("Unit") if self.magnitude == 1 else str("")}'\
-              '\n\r'\
-              f'  -> x = {self.x}'\
-              '\n\r'\
+              f'{str("Unit") if self.magnitude == 1 else str("")}' \
+              '\n\r' \
+              f'  -> x = {self.x}' \
+              '\n\r' \
               f'  -> y = {self.y}'
         if self.z > 0:
-            out += '\n\r'\
+            out += '\n\r' \
                    f'  -> z = {self.z}'
         angle = self.angle_in_degrees()
 
-        out += '\n\r  -> angle {}'.format(angle)\
+        out += '\n\r  -> angle {}'.format(angle) \
             if isinstance(angle, float) or isinstance(angle, int) \
             else '\n\r' f'  -> angle x:{angle[0]},y:{angle[1]},z:{angle[2]}'
 
@@ -129,7 +174,7 @@ if __name__ == "__main__":
     print("v4\n\r", v4.__repr__(), "\n\r", v4)
 
     print(f"Converting v4 into Unit Vector \n\r")
-    v5 = v4.convert_to_unit()
+    v5 = v4.normalize()
     print("v5\n\r", v5.__repr__(), "\n\r", v5)
 
     print("Increasing v5's magnitude to a factor of 10\n\r")
