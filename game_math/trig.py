@@ -1,28 +1,21 @@
 # module for common math functions
-import math
+from functools import cached_property
 from dataclasses import dataclass, field
 from math import sqrt, hypot, atan2, degrees
 
-
-@dataclass(eq=True, slots=True, init=True)
+@dataclass(eq=True, init=True)
 class Vector:
-    _x: float = field(default=0.)
-    _y: float = field(default=0.)
-    _z: float = field(default=0.)
+    x: float = field(default=0.)
+    y: float = field(default=0.)
+    z: float = field(default=0.)
 
     @property
     def vec(self):
         return self.x, self.y, self.z
 
     @vec.setter
-    def vec(self, vec):
-        self.x, self.y, self.z = vec
-
-    @vec.setter
     def vec(self, x=0., y=0., z=0):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x, self.y, self.z = x, y, z
 
     @property
     def magnitude(self):
@@ -35,32 +28,8 @@ class Vector:
         self.y *= magnitude
         self.z *= magnitude
 
-    @property
-    def x(self):
-        return self._x
-
-    @x.setter
-    def x(self, x):
-        self._x = x
-
-    @property
-    def y(self):
-        return self._y
-
-    @y.setter
-    def y(self, y):
-        self._y = y
-
-    @property
-    def z(self):
-        return self._z
-
-    @z.setter
-    def z(self, z):
-        self._z = z
-
-    @property
-    def angle(self):
+    @cached_property
+    def radians(self):
         if self.z == 0:
             return self.y / self.magnitude
         else:
@@ -69,14 +38,14 @@ class Vector:
             az = atan2(sqrt((self.x ** 2) + (self.y ** 2)), self.z)
             return ax, ay, az
 
-    def angle_in_degrees(self):
-        return math.degrees(self.angle) if self.z == 0 else tuple((math.degrees(rad) for rad in self.angle))
+    @cached_property
+    def degrees(self):
+        return degrees(self.radians) if self.z == 0 else tuple((degrees(rad) for rad in self.radians))
+
 
     def normalize(self):
         m = self.magnitude
-        self.x /= m
-        self.y /= m
-        self.z /= m
+        self.x, self.y, self.z = tuple(a/m for a in self.vec)
         return self
 
     @classmethod
@@ -84,14 +53,10 @@ class Vector:
         return cls(x, y, z).normalize()
 
     def __add__(self, other):
-        if isinstance(other, self.__class__):
-            x = other.x + self.x
-            y = other.y + self.y
-            z = other.z + self.z
+        if isinstance(other, Vector):
+            x, y, z = tuple(a+b for (a, b) in zip(self.vec, other.vec))
         elif isinstance(other, int) or isinstance(other, float):
-            x = self.x + other
-            y = self.y + other
-            z = self.z + other
+            x, y, z = tuple(a+other for a in self.vec)
         else:
             return self
 
@@ -99,35 +64,20 @@ class Vector:
 
     def __truediv__(self, other):
         if isinstance(other, self.__class__):
-            x = other.x / self.x if other.x and self.x else 0
-            y = other.y / self.y if other.y and self.y else 0
-            z = other.z / self.z if other.z and self.z else 0
-
+            x, y, z = tuple(a/b if a and b else 0 for (a, b) in zip(self.vec, other.vec))
         elif isinstance(other, float) or isinstance(other, int):
-            x = self.x / other if self.x and other else 0
-            y = self.y / other if self.y and other else 0
-            z = self.z / other if self.z and other else 0
-
+            x, y, z = tuple(a/other if a and other else 0  for a in self.vec)
         else:
             return self
-
         return self.__create__(x, y, z)
 
     def __mul__(self, other):
-
         if isinstance(other, self.__class__):
-            x = other.x * self.x if other.x and self.x else 0
-            y = other.y * self.y if other.y and self.y else 0
-            z = other.z * self.z if other.z and self.z else 0
-
+            x, y, z = tuple(a*b if a and b else 0 for (a, b) in zip(self.vec, other.vec))
         elif isinstance(other, float) or isinstance(other, int):
-            x = self.x * other if other and self.x else 0
-            y = self.y * other if other and self.y else 0
-            z = self.z * other if other and self.z else 0
-
+            x, y, z = tuple (a*other if a and other else 0 for a in self.vec)
         else:
             return self
-
         return self.__create__(x, y, z)
 
     def __repr__(self):
@@ -144,7 +94,7 @@ class Vector:
         if self.z > 0:
             out += '\n\r' \
                    f'  -> z = {self.z}'
-        angle = self.angle_in_degrees()
+        angle = self.degrees
 
         out += '\n\r  -> angle {}'.format(angle) \
             if isinstance(angle, float) or isinstance(angle, int) \
@@ -155,28 +105,14 @@ class Vector:
         return out
 
     @classmethod
-    def __create__(cls, x, y, z):
+    def __create__(cls, x=0, y=0, z=0):
         return cls(x, y, z)
 
 
 if __name__ == "__main__":
-    v1 = Vector(10., 15)
-    print("v1\n\r", v1.__repr__(), "\n\r", v1)
+    vector_1 = Vector(100, 100, 100)
+    vector_2 = Vector(50, 50, 50)
+    vector_3 = vector_1+vector_2
+    vector_4 = vector_1*vector_2
+    vector_5 = vector_1*vector_2
 
-    v2 = Vector(10., 20)
-    print("v2\n\r", v2.__repr__(), "\n\r", v2)
-
-    v3 = Vector(10., -70., 30)
-    print("v3\n\r", v3.__repr__(), "\n\r", v3)
-
-    print("Adding Vectors v1, v2, v3 \n\r")
-    v4 = (v1 + v2 + v3)
-    print("v4\n\r", v4.__repr__(), "\n\r", v4)
-
-    print(f"Converting v4 into Unit Vector \n\r")
-    v5 = v4.normalize()
-    print("v5\n\r", v5.__repr__(), "\n\r", v5)
-
-    print("Increasing v5's magnitude to a factor of 10\n\r")
-    v5.magnitude = 10
-    print("v5 * 10\n\r", v5.__repr__(), "\n\r", v5)
