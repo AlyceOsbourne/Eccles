@@ -1,7 +1,2 @@
-/.idea/.gitignore
-/.idea/eccles.iml
-/.idea/misc.xml
-/.idea/modules.xml
-/.idea/vcs.xml
-/venv/Lib
-/venv/scripts
+/.idea
+/venv
