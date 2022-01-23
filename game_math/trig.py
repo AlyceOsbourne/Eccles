@@ -24,9 +24,7 @@ class Vector:
     @magnitude.setter
     def magnitude(self, magnitude):
         self.normalize()
-        self.x *= magnitude
-        self.y *= magnitude
-        self.z *= magnitude
+        self.x, self.y, self.z = tuple((a*magnitude for a in self.vec))
 
     @cached_property
     def radians(self):
@@ -108,6 +106,9 @@ class Vector:
 
 
 if __name__ == "__main__":
+    """
+    example code for making sure things are operating as expected
+    """
     vector_1 = Vector(6, 33, 90)
     vector_2 = Vector(10, 1, 6)
     print("initial vectors\n\r", vector_1, vector_2)
