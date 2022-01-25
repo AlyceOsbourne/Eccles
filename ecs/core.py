@@ -1,14 +1,30 @@
 import logging
+from abc import abstractmethod
 from threading import Thread
 from itertools import count
+
+from numba import jit
 
 logging.basicConfig(level=logging.DEBUG)
 created_entity_counter = count(0)
 
 #########################################################################
-# ECS Exceptions
+# object storage
 #########################################################################
-class ComponentError(Exception):
+_components = {}
+_entities = {}
+_systems = []
+
+
+#########################################################################
+# ECS Exceptions
+# todo -> Write more comprehensive exception messages,
+#  but will do this once the module is more fleshed
+#  out and I have a better idea of the things that can go wrong
+#########################################################################
+
+
+class ComponentException(Exception):
     def __init__(self, component, message):
         """
         :param component: component that raised the error
@@ -19,10 +35,11 @@ class ComponentError(Exception):
         super().__init__(f"{self.component}: {self.message}")
 
 
-class ComponentSystemError(Exception):
+class ComponentSystemException(Exception):
     def __init__(self, system, message):
         """
-        :param component: component that raised the error
+
+        :param system: system that raised the error
         :param message: what error occurred
         """
         self.system = system
@@ -30,10 +47,10 @@ class ComponentSystemError(Exception):
         super().__init__(f"{self.system}: {self.message}")
 
 
-class ComponentSystemManagerError(Exception):
+class ComponentSystemManagerException(Exception):
     def __init__(self, message):
         """
-        :param message: what error occurred
+        param message: what error occurred
         """
         self.message = message
         super().__init__(f"{self.message}")
@@ -41,20 +58,42 @@ class ComponentSystemManagerError(Exception):
 
 #########################################################################
 # Core Objects
+# todo -> write the core system class, it should extend thread as this
+#  will be running as its own thing, will probably have to implement a lock
+#  for when components are being modified.
+#  - should contain refs to entities components, maybe
 #########################################################################
 class Component:
-    entity_id: int
-    pass
+    default_field_args = {'init': True, 'hash': True, 'compare': True}
+
+    @abstractmethod
+    def get_value(self):
+        pass
+
+    @abstractmethod
+    def set_value(self, *args, **kwargs):
+        pass
+
+    @jit
+    def attach(self, entity_id):
+        if self.__class__.__name__ not in _components.keys():
+            _components[self.__class__.__name__] = {}
+        _components[self.__class__.__name__].update({entity_id})
 
 
 class Entity:
+    @jit
     def __init__(self, *components):
         self.entity_id = created_entity_counter.__next__()
         for component in components:
             if issubclass(component.__class__, Component):
-                component.entity_id = self.entity_id
+                component.attach(self.entity_id)
                 self.__dict__.update({component.__class__.__name__: component})
+            else:
+                raise ComponentException(component, "This object is not a Component Object, please check your code")
+        _entities[self.entity_id] = self
 
 
 class System(Thread):
-    pass
+    def __init__(self):
+        _systems.append(self)
