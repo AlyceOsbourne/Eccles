@@ -27,7 +27,7 @@ class Position(Component):
 
 @dataclass(slots=True, eq=True)
 class Rotation(Component):
-    rotation: tuple[float, float, float] = field(default=(0, 0, 0), **Component.default_field_args)
+    rotation: tuple[float, float, float] = field(default=(0., 0., 0.), **Component.default_field_args)
 
     def get_value(self):
         return self.rotation
@@ -38,7 +38,7 @@ class Rotation(Component):
 
 @dataclass(slots=True, eq=True)
 class Velocity(Component):
-    velocity: tuple[float, float, float] = field(default=(0, 0, 0), **Component.default_field_args)
+    velocity: tuple[float, float, float] = field(default=(0., 0., 0.), **Component.default_field_args)
 
     def get_value(self):
         return self.velocity
@@ -74,7 +74,7 @@ class Mesh(Component):
 
 @dataclass(slots=True, eq=True)
 class Scale(Component):
-    scale: tuple[float, float, float] = field(default=(1, 1, 1), **Component.default_field_args)
+    scale: tuple[float, float, float] = field(default=(1., 1., 1.), **Component.default_field_args)
 
     def get_value(self):
         return self.scale

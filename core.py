@@ -4,7 +4,6 @@ from threading import Thread
 from itertools import count
 
 from numba import jit
-
 logging.basicConfig(level=logging.DEBUG)
 created_entity_counter = count(0)
 
@@ -74,16 +73,20 @@ class Component:
     def set_value(self, *args, **kwargs):
         pass
 
-    @jit
     def attach(self, entity_id):
         if self.__class__.__name__ not in _components.keys():
             _components[self.__class__.__name__] = {}
-        _components[self.__class__.__name__].update({entity_id})
+        _components[self.__class__.__name__].update({entity_id: self})
+
+
 
 
 class Entity:
-    @jit
     def __init__(self, *components):
+        self.entity_id = created_entity_counter.__next__()
+        self.attach(*components)
+
+    def attach(self, *components):
         self.entity_id = created_entity_counter.__next__()
         for component in components:
             if issubclass(component.__class__, Component):
@@ -92,6 +95,17 @@ class Entity:
             else:
                 raise ComponentException(component, "This object is not a Component Object, please check your code")
         _entities[self.entity_id] = self
+
+    def detach(self, component):
+        self.__dict__.pop(component.__class__.__name__)
+
+    def __repr__(self):
+        out = f"{self.__class__.__name__}"
+        out += f"#{self.entity_id}"'\n\r'
+        for v in self.__dict__.values():
+            if issubclass(v.__class__, Component):
+                out += '\n\r'f"-> {v.__class__.__name__}:({v.get_value()})"
+        return out
 
 
 class System(Thread):
