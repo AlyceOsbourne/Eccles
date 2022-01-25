@@ -1,10 +1,8 @@
 import logging
 from abc import abstractmethod
-from threading import Thread
 from itertools import count
+ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
 
-from numba import jit
-logging.basicConfig(level=logging.DEBUG)
 created_entity_counter = count(0)
 
 #########################################################################
@@ -63,7 +61,9 @@ class ComponentSystemManagerException(Exception):
 #  - should contain refs to entities components, maybe
 #########################################################################
 class Component:
-    default_field_args = {'init': True, 'hash': True, 'compare': True}
+
+    # used for components dataclass fields
+    default_field_args = {'init': True, 'hash': True, 'compare': True, "repr": True}
 
     @abstractmethod
     def get_value(self):
@@ -79,35 +79,44 @@ class Component:
         _components[self.__class__.__name__].update({entity_id: self})
 
 
-
-
 class Entity:
+
     def __init__(self, *components):
         self.entity_id = created_entity_counter.__next__()
         self.attach(*components)
+        ecs_logger.log(logging.DEBUG, f"Entity#{self.entity_id} created")
 
     def attach(self, *components):
         self.entity_id = created_entity_counter.__next__()
+        log = "Attached: \n\r"
         for component in components:
             if issubclass(component.__class__, Component):
                 component.attach(self.entity_id)
                 self.__dict__.update({component.__class__.__name__: component})
+                log += f"{component.__class__.__name__}""\n\r"
             else:
                 raise ComponentException(component, "This object is not a Component Object, please check your code")
+            ecs_logger.log(logging.DEBUG, log)
+
         _entities[self.entity_id] = self
 
     def detach(self, component):
-        self.__dict__.pop(component.__class__.__name__)
+        if isinstance(component, str):
+            ecs_logger.log(logging.DEBUG, f"detached {component} from Entity#{self.entity_id}")
+            self.__dict__.pop(component)
+            return
 
-    def __repr__(self):
-        out = f"{self.__class__.__name__}"
-        out += f"#{self.entity_id}"'\n\r'
-        for v in self.__dict__.values():
-            if issubclass(v.__class__, Component):
-                out += '\n\r'f"-> {v.__class__.__name__}:({v.get_value()})"
-        return out
+        elif isinstance(component, Component):
+            ecs_logger.log(logging.DEBUG, f"detached {component.__class__.__name__} from Entity#{self.entity_id}")
+            self.__dict__.pop(component.__class__.__name__)
+            return
+
+        elif isinstance(component, type):
+            ecs_logger.log(logging.DEBUG, f"detached {component.__name__} from Entity#{self.entity_id}")
+            self.__dict__.pop(component.__name__)
+            return
 
 
-class System(Thread):
+class System:
     def __init__(self):
         _systems.append(self)
