@@ -6,9 +6,13 @@ from core import Component
 #                                    Prefabs
 #############################################################################
 
-# Components categorized by recommended system, this is a guideline but not a rule
+# Components categorized by recommended system, this is a guide but not a rule
 # It's recommended to create new components that subclass Component rather than
-# subclass existing ones, again, this is structural advice and not a rule
+# subclass existing ones, again, this is structural advice and not a rule.
+
+# Generally these are just data to be passed to game engines, thus they will not
+# implement things like vectors, that will be up to the engine, this will just hold
+# said data
 
 #############################################################################
 #                                   Locomotion
