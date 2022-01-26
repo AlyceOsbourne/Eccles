@@ -1,16 +1,26 @@
+__VERSION__ = {'MAJOR': 0, 'MINOR': 0, 'DEBUG': 0, 'DEVELOPMENT': 1}
+PROJECT_NAME = "Eccles"
+VERSION = "v{}.{}.{}.{}".format(*__VERSION__.values())
+print(f"{PROJECT_NAME}.{VERSION} loaded")
 #########################################################################
 # The general idea of this module is to provide a fast, easy to use ECS
 # that allows the dynamic creation, modification and cleanup of entities
 # and components, the initial build will be geared towards games, but I
 # will later include a UI app ECS as I feel it could be of use there too
 #########################################################################
-from core import Component, Entity, System, ComponentException, ComponentSystemException, ComponentSystemManagerException, _systems, _components, _entities
-from ecs_prfabs.prefab_components import *
-from ecs_prfabs.prefab_systems import *
+# Init
+#########################################################################
+print("Starting init")
+# -> load definitions from file
 
-if __name__ == "__main__":
+print("Loading definitions")
+# -> create components from definitions
 
-    e = Entity(Position((1., 1., 1.)), Rotation(), Velocity(), Mesh(), Scale())
-    e.attach(Glow())
-    e.detach(e.Velocity)
-    s = MotionSystem()
+print("running component factory")
+# -> create entity archetypes from definitions and components
+
+print("Running entity factory")
+# -> load systems from definitions and link to relevant lists and dicts
+
+print(f"Launching {PROJECT_NAME} and starting systems")
+# -> trigger runtime and start system threads

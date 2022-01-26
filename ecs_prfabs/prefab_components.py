@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 from core import Component
 
 
@@ -137,3 +138,30 @@ class Colour(Component):
 
     def set_value(self, colour):
         self.colour = colour
+
+
+############################################################################
+#                             Game Componenta
+############################################################################
+
+@dataclass(slots=True, eq=True)
+class Name(Component):
+    name: str = field(default="No Name", **Component.default_field_args)
+    short_name: str = field(default="No Name", **Component.default_field_args)
+
+
+@dataclass(slots=True, eq=True)
+class Value(Component):
+    value: float = field(default=1, **Component.default_field_args)
+
+
+@dataclass(slots=True, eq=True)
+class Tradable(Component):
+    tradable: bool = field(default=True, **Component.default_field_args)
+    sellable: bool = field(default=True, **Component.default_field_args)
+
+
+@dataclass(slots=True, eq=True)
+class Inventory(Component):
+    max_size: int = field(default=10, **Component.default_field_args)
+    inventory: list = field(default_factory=dict, **Component.default_field_args)

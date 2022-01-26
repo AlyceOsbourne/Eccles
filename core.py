@@ -2,7 +2,6 @@ import logging
 from abc import abstractmethod
 from itertools import count
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
-
 created_entity_counter = count(0)
 
 #########################################################################
