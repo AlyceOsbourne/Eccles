@@ -5,12 +5,6 @@ from itertools import count
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
 created_entity_counter = count(0)
 
-
-#########################################################################
-# object storage
-#########################################################################
-
-
 #########################################################################
 # ECS Exceptions
 # todo -> Write more comprehensive exception messages,
@@ -124,7 +118,6 @@ class Entity:
 
 
 class System:
-
     def __init__(self, *managed):
         self.managed_components = managed
         ECS.systems.append(self)
@@ -133,5 +126,10 @@ class System:
         return [ECS.components[key.__class__.__name__] for key in self.managed_components]
 
     @abstractmethod
-    def update(self, *args, **kwargs):
-        print(self.__class__.__name__, "Update method for class has not been implemented")
+    def update(self, c):
+        print(f"{self.__class__.__name__}"
+              " does not seem to implement the update function OR said implementation of update calls super")
+
+    def __call__(self, *args, **kwargs):  # we call up on the system to collect the data and process via the update
+        # function
+        self.update(self.collect())

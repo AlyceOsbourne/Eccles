@@ -1,8 +1,13 @@
 from core import System
+from prefab_components import *
 
 
 class MotionSystem(System):
-    pass
+    def __init__(self):
+        super().__init__(Position, Rotation, Velocity)
+
+    def update(self, c):
+        pass
 
 
 class AudioSystem(System):

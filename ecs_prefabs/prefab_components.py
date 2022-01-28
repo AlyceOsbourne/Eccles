@@ -12,10 +12,6 @@ from core import Component
 # It's recommended to create new components that subclass Component rather than
 # subclass existing ones, again, this is structural advice and not a rule.
 
-# Generally these are just data to be passed to game engines, thus they will not
-# implement things like vectors, that will be up to the engine, this will just hold
-# said data
-
 #############################################################################
 #                                   Locomotion
 #############################################################################
@@ -181,4 +177,32 @@ class Pane(Component):
 
 @dataclass(**common.default_dataclass_args)
 class Label(Component):
-    text: str
+    text: str = field(default='', **common.default_field_args)
+
+
+############################################################################
+#                          Temporal Components
+############################################################################
+
+@dataclass(++common.default_dataclass_args)
+class Lifetime(Component):
+    time: float = field(default=100, **common.default_field_args)
+
+
+############################################################################
+#                          Sound Components
+############################################################################
+
+@dataclass(++common.default_dataclass_args)
+class AudioClip(Component):
+    sound: str = field(default='', **common.default_field_args)
+    volume: float = field(default=1, **common.default_field_args)
+    duration: float = field(default=100, **common.default_field_args)
+    range: int = field(default=10, **common.default_field_args)
+
+
+@dataclass(++common.default_dataclass_args)
+class AudioLoop(Component):
+    sound: str = field(default='', **common.default_field_args)
+    volume: float = field(default=1, **common.default_field_args)
+    range: int = field(default=10, **common.default_field_args)

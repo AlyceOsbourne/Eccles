@@ -1,5 +1,3 @@
-from core import ECSClock
-
 __VERSION__ = {'MAJOR': 0, 'MINOR': 0, 'DEBUG': 0, 'DEVELOPMENT': 1}
 PROJECT_NAME = "Eccles"
 VERSION = "v{}.{}.{}.{}".format(*__VERSION__.values())
@@ -11,6 +9,9 @@ print(f"{PROJECT_NAME}.{VERSION} loaded")
 # that allows the dynamic creation, modification and cleanup of entities
 # and components, the initial build will be geared towards games, but I
 # will later include a UI app ECS as I feel it could be of use there too
+#
+# todo -> study into LLVMLite for JIT capabilities, candidates for jit:
+#   -> system
 #########################################################################
 # Init
 #########################################################################
@@ -26,8 +27,3 @@ def init():
 
     print("Running entity factory")
     # -> load systems from definitions and link to relevant lists and dicts
-
-    clock = ECSClock()
-
-
-init()
