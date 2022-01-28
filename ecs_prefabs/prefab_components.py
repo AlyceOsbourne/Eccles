@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+import common
 from core import Component
 
 
@@ -19,9 +20,9 @@ from core import Component
 #                                   Locomotion
 #############################################################################
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Position(Component):
-    position: tuple[float, float, float] = field(default=(0, 0, 0), **Component.default_field_args)
+    position: tuple[float, float, float] = field(default=(0, 0, 0), **common.default_field_args)
 
     def get_value(self):
         return self.position
@@ -30,9 +31,9 @@ class Position(Component):
         self.position = pos
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Rotation(Component):
-    rotation: tuple[float, float, float] = field(default=(0., 0., 0.), **Component.default_field_args)
+    rotation: tuple[float, float, float] = field(default=(0., 0., 0.), **common.default_field_args)
 
     def get_value(self):
         return self.rotation
@@ -41,9 +42,9 @@ class Rotation(Component):
         self.rotation = rotation
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Velocity(Component):
-    velocity: tuple[float, float, float] = field(default=(0., 0., 0.), **Component.default_field_args)
+    velocity: tuple[float, float, float] = field(default=(0., 0., 0.), **common.default_field_args)
 
     def get_value(self):
         return self.velocity
@@ -52,9 +53,9 @@ class Velocity(Component):
         self.velocity = velocity
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Mass(Component):
-    mass: float = field(default=1., **Component.default_field_args)
+    mass: float = field(default=1., **common.default_field_args)
 
     def get_value(self):
         return self.mass
@@ -66,9 +67,9 @@ class Mass(Component):
 #############################################################################
 #                                   Model
 #############################################################################
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Mesh(Component):
-    model: str = field(default='cube', **Component.default_field_args)
+    model: str = field(default='cube', **common.default_field_args)
 
     def get_value(self):
         return self.model
@@ -77,9 +78,9 @@ class Mesh(Component):
         self.model = model
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Scale(Component):
-    scale: tuple[float, float, float] = field(default=(1., 1., 1.), **Component.default_field_args)
+    scale: tuple[float, float, float] = field(default=(1., 1., 1.), **common.default_field_args)
 
     def get_value(self):
         return self.scale
@@ -92,11 +93,11 @@ class Scale(Component):
 #                                   Render
 ############################################################################
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Light(Component):  # to emit light in range
-    colour: tuple[int, int, int] = field(default=(255, 255, 255), **Component.default_field_args)
-    intensity: float = field(default=1, **Component.default_field_args)
-    radius: float = field(default=1, **Component.default_field_args)
+    colour: tuple[int, int, int] = field(default=(255, 255, 255), **common.default_field_args)
+    intensity: float = field(default=1, **common.default_field_args)
+    radius: float = field(default=1, **common.default_field_args)
 
     def get_value(self):
         return self.colour, self.intensity, self.radius
@@ -105,11 +106,11 @@ class Light(Component):  # to emit light in range
         self.colour, self.intensity, self.radius = colour, intensity, radius
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Glow(Component):  # to emit glow on particular region of object
-    colour: tuple[int, int, int] = field(default=(255, 255, 255), **Component.default_field_args)
-    intensity: float = field(default=1, **Component.default_field_args)
-    radius: float = field(default=1, **Component.default_field_args)
+    colour: tuple[int, int, int] = field(default=(255, 255, 255), **common.default_field_args)
+    intensity: float = field(default=1, **common.default_field_args)
+    radius: float = field(default=1, **common.default_field_args)
 
     def get_value(self):
         return self.colour, self.intensity, self.radius
@@ -118,9 +119,9 @@ class Glow(Component):  # to emit glow on particular region of object
         self.colour, self.intensity, self.radius = colour, intensity, radius
 
 
-@dataclass(kw_only=True, slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Opacity(Component):
-    opacity: float = field(default=1.0, **Component.default_field_args)
+    opacity: float = field(default=1.0, **common.default_field_args)
 
     def get_value(self):
         return self.opacity
@@ -129,9 +130,9 @@ class Opacity(Component):
         self.opacity = opacity
 
 
-@dataclass(kw_only=True, slots=True, eq=True)
+@dataclass(kw_only=True, **common.default_dataclass_args)
 class Colour(Component):
-    colour: tuple[int, int, int] = field(default=(255, 255, 255), **Component.default_field_args)
+    colour: tuple[int, int, int] = field(default=(255, 255, 255), **common.default_field_args)
 
     def get_value(self):
         return self.colour
@@ -141,27 +142,43 @@ class Colour(Component):
 
 
 ############################################################################
-#                             Game Componenta
+#                             Game Components
 ############################################################################
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Name(Component):
-    name: str = field(default="No Name", **Component.default_field_args)
-    short_name: str = field(default="No Name", **Component.default_field_args)
+    name: str = field(default="No Name", **common.default_field_args)
+    short_name: str = field(default="No Name", **common.default_field_args)
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Value(Component):
-    value: float = field(default=1, **Component.default_field_args)
+    value: float = field(default=1, **common.default_field_args)
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Tradable(Component):
-    tradable: bool = field(default=True, **Component.default_field_args)
-    sellable: bool = field(default=True, **Component.default_field_args)
+    tradable: bool = field(default=True, **common.default_field_args)
+    sellable: bool = field(default=True, **common.default_field_args)
 
 
-@dataclass(slots=True, eq=True)
+@dataclass(**common.default_dataclass_args)
 class Inventory(Component):
-    max_size: int = field(default=10, **Component.default_field_args)
-    inventory: list = field(default_factory=dict, **Component.default_field_args)
+    max_size: int = field(default=10, **common.default_field_args)
+    inventory: list = field(default_factory=dict, **common.default_field_args)
+
+
+############################################################################
+#                             UI Components
+############################################################################
+
+@dataclass(**common.default_dataclass_args)
+class Pane(Component):
+    width: int = field(default=100, **common.default_field_args)
+    height: int = field(default=100, **common.default_field_args)
+    transparency: int = field(default=100, **common.default_field_args)
+
+
+@dataclass(**common.default_dataclass_args)
+class Label(Component):
+    text: str

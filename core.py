@@ -1,15 +1,14 @@
 import logging
 from abc import abstractmethod
 from itertools import count
+
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
 created_entity_counter = count(0)
+
 
 #########################################################################
 # object storage
 #########################################################################
-_components = {}
-_entities = {}
-_systems = []
 
 
 #########################################################################
@@ -52,17 +51,21 @@ class ComponentSystemManagerException(Exception):
         super().__init__(f"{self.message}")
 
 
+class ECS:
+    components = {}
+    entities = {}
+    systems = []
+
+
 #########################################################################
 # Core Objects
 # todo -> write the core system class, it should extend thread as this
 #  will be running as its own thing, will probably have to implement a lock
 #  for when components are being modified.
-#  - should contain refs to entities components, maybe
 #########################################################################
 class Component:
-
     # used for components dataclass fields
-    default_field_args = {'init': True, 'hash': True, 'compare': True, "repr": True}
+    entity_id = None
 
     @abstractmethod
     def get_value(self):
@@ -73,9 +76,13 @@ class Component:
         pass
 
     def attach(self, entity_id):
-        if self.__class__.__name__ not in _components.keys():
-            _components[self.__class__.__name__] = {}
-        _components[self.__class__.__name__].update({entity_id: self})
+        if self.__class__.__name__ not in ECS.components.keys():
+            ECS.components[self.__class__.__name__] = {}
+        ECS.components[self.__class__.__name__].update({entity_id: self})
+        self.entity_id = entity_id
+
+    def is_attached(self):
+        return self.entity_id is not None
 
 
 class Entity:
@@ -97,7 +104,7 @@ class Entity:
                 raise ComponentException(component, "This object is not a Component Object, please check your code")
             ecs_logger.log(logging.DEBUG, log)
 
-        _entities[self.entity_id] = self
+        ECS.entities[self.entity_id] = self
 
     def detach(self, component):
         if isinstance(component, str):
@@ -117,5 +124,14 @@ class Entity:
 
 
 class System:
-    def __init__(self):
-        _systems.append(self)
+
+    def __init__(self, *managed):
+        self.managed_components = managed
+        ECS.systems.append(self)
+
+    def collect(self):
+        return [ECS.components[key.__class__.__name__] for key in self.managed_components]
+
+    @abstractmethod
+    def update(self, *args, **kwargs):
+        print(self.__class__.__name__, "Update method for class has not been implemented")
