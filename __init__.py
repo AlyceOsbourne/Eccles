@@ -10,11 +10,42 @@ print(f"{PROJECT_NAME}.{VERSION} loaded")
 # and components, the initial build will be geared towards games, but I
 # will later include a UI app ECS as I feel it could be of use there too
 #
-# todo -> study into LLVMLite for JIT capabilities, candidates for jit:
-#   -> system
+# todo study into LLVMLite for JIT capabilities, candidates for jit:
+#   -> system update functions
+#   -> entity archetype instantiation
+#   -> Components? As we will always know their core values?
+#
+# todo create common math functions
+#   -> vector math, unit vector conversions
+#   -> various curves, waves and linear functions
+#   -> geometry for shape, vert, model, path etc
+#
+# todo create common string functions
+#   -> string builders
+#   -> string parser
+#   -> string randomizer
+#
+# todo render system
+#   -> OpenGL or Vulkan?
+#   -> *.OBJ loading and manipulation
+#   -> procedural mesh generation
+#   -> particle engine
+#   -> shader engine
+#
+# todo input capture
+#   -> mappings keyboard, mouse, controller
+#
+# todo animation system
+#   -> skeleton controller
+#   -> kinematics
+#
+# todo pysics
+#   -> colliders
+#   -> interactions
 #########################################################################
 # Init
 #########################################################################
+
 def init():
     print("Starting init")
     # -> load definitions from file

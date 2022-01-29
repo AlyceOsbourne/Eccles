@@ -99,6 +99,7 @@ class Entity:
             ecs_logger.log(logging.DEBUG, log)
 
         ECS.entities[self.entity_id] = self
+        return self
 
     def detach(self, component):
         if isinstance(component, str):
