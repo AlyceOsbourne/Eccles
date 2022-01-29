@@ -1,7 +1,10 @@
+from core import Entity
+from ecs_prefabs.prefabs import *
+
 __VERSION__ = {'MAJOR': 0, 'MINOR': 0, 'DEBUG': 0, 'DEVELOPMENT': 1}
-PROJECT_NAME = "Eccles"
-VERSION = "v{}.{}.{}.{}".format(*__VERSION__.values())
-print(f"{PROJECT_NAME}.{VERSION} loaded")
+__PROJECT_NAME__ = "Eccles"
+__VERSION_STR__ = "v{}.{}.{}.{}".format(*__VERSION__.values())
+print(f"{__PROJECT_NAME__}.{__VERSION_STR__} loaded")
 
 
 #########################################################################
@@ -58,3 +61,8 @@ def init():
 
     print("Running entity factory")
     # -> load systems from definitions and link to relevant lists and dicts
+
+
+e = Entity.from_archetype(*DefaultLivingCreatures.Player.value)
+
+print(e)

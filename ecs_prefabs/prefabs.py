@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from enum import Enum
 
 import common
 from core import Component, System
@@ -138,7 +139,7 @@ class Colour(Component):
 
 
 ############################################################################
-#                             Game Components
+#                     Item and Creature Components
 ############################################################################
 
 @dataclass(**common.default_dataclass_args)
@@ -184,7 +185,7 @@ class Label(Component):
 #                          Temporal Components
 ############################################################################
 
-@dataclass(++common.default_dataclass_args)
+@dataclass(**common.default_dataclass_args)
 class Lifetime(Component):
     time: float = field(default=100, **common.default_field_args)
 
@@ -193,7 +194,7 @@ class Lifetime(Component):
 #                          Sound Components
 ############################################################################
 
-@dataclass(++common.default_dataclass_args)
+@dataclass(**common.default_dataclass_args)
 class AudioClip(Component):
     sound: str = field(default='', **common.default_field_args)
     volume: float = field(default=1, **common.default_field_args)
@@ -201,27 +202,24 @@ class AudioClip(Component):
     range: int = field(default=10, **common.default_field_args)
 
 
-@dataclass(++common.default_dataclass_args)
+@dataclass(**common.default_dataclass_args)
 class AudioLoop(Component):
     sound: str = field(default='', **common.default_field_args)
     volume: float = field(default=1, **common.default_field_args)
     range: int = field(default=10, **common.default_field_args)
 
 
+@dataclass(**common.default_dataclass_args)
+class AudioInterval(Component):
+    pass
+
+
 ############################################################################
 #                               ARCHETYPES
 ############################################################################
-class ArchetypeFactory:
-    pass
-    # ok, so, I think this class is going to construct archetypes from dicts,
-    # this way the user can provide new dicts to the factory to create new archetypes
-    # I think it should yield a completed Entity rather than a particular Type,
-    # as I feel this wil overall be more consistent with the overall design of
-    # little inheritance
 
-    # design ideas ->
-    # I wish to create a callable object that serves as a container fo sorts
-    #
+class DefaultLivingCreatures(Enum):
+    Player = (Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), "Player"
 
 
 ############################################################################

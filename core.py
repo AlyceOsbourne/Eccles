@@ -5,6 +5,7 @@ from itertools import count
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
 created_entity_counter = count(0)
 
+
 #########################################################################
 # ECS Exceptions
 # todo -> Write more comprehensive exception messages,
@@ -13,7 +14,7 @@ created_entity_counter = count(0)
 #########################################################################
 
 
-class ComponentException(Exception):
+class EcclesComponentException(Exception):
     def __init__(self, component, message):
         """
         :param component: component that raised the error
@@ -24,7 +25,7 @@ class ComponentException(Exception):
         super().__init__(f"{self.component}: {self.message}")
 
 
-class ComponentSystemException(Exception):
+class EcclesSystemException(Exception):
     def __init__(self, system, message):
         """
 
@@ -36,13 +37,15 @@ class ComponentSystemException(Exception):
         super().__init__(f"{self.system}: {self.message}")
 
 
-class ComponentSystemManagerException(Exception):
-    def __init__(self, message):
+class EcclesFoundryException(Exception):
+    def __init__(self, foundry, message):
         """
-        param message: what error occurred
+        :param system: system that raised the error
+        :param message: what error occurred
         """
+        self.foundry = foundry
         self.message = message
-        super().__init__(f"{self.message}")
+        super().__init__(f"{self.foundry}: {self.message}")
 
 
 class ECS:
@@ -51,12 +54,6 @@ class ECS:
     systems = []
 
 
-#########################################################################
-# Core Objects
-# todo -> write the core system class, it should extend thread as this
-#  will be running as its own thing, will probably have to implement a lock
-#  for when components are being modified.
-#########################################################################
 class Component:
     # used for components dataclass fields
     entity_id = None
@@ -90,12 +87,15 @@ class Entity:
         self.entity_id = created_entity_counter.__next__()
         log = "Attached: \n\r"
         for component in components:
+            if isinstance(component, type):
+                component = component()
             if issubclass(component.__class__, Component):
                 component.attach(self.entity_id)
                 self.__dict__.update({component.__class__.__name__: component})
                 log += f"{component.__class__.__name__}""\n\r"
             else:
-                raise ComponentException(component, "This object is not a Component Object, please check your code")
+                raise EcclesComponentException(component,
+                                               "This object is not a Component Object, please check your code")
             ecs_logger.log(logging.DEBUG, log)
 
         ECS.entities[self.entity_id] = self
@@ -116,6 +116,20 @@ class Entity:
             ecs_logger.log(logging.DEBUG, f"detached {component.__name__} from Entity#{self.entity_id}")
             self.__dict__.pop(component.__name__)
             return
+
+    def __str__(self):
+        out = f"{self.__class__.__name__}({[v for v in self.__dict__.values() if issubclass(v.__class__, Component)]})"
+        return out
+
+    @classmethod
+    def from_archetype(cls, blueprint: list[Component], name=None, class_dict=None):
+        cd = class_dict if class_dict else {}
+        if name:
+            e = type(name, (Entity,), cd)(*blueprint)
+        else:
+            e = Entity(*blueprint)
+            e.__dict__.update(cd)
+        return e
 
 
 class System:
