@@ -171,7 +171,7 @@ class Inventory(Component):
 
 
 @dataclass(**common.default_dataclass_args)
-class WieghtedInventory(Inventory):
+class WeightedInventory(Inventory):
     max_weight: float = field(default=100., **common.default_field_args)
     current_weight: float = field(default=0., **common.default_field_args)
     inventory: list = field(default_factory=dict, **common.default_field_args)
@@ -257,15 +257,12 @@ class HostileAI(Component):
 class AmbientAI(Component):
     pass
 
-
 ############################################################################
 #                               ARCHETYPES
 ############################################################################
 
 class DefaultLivingCreatures(Enum):
     Player = (Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), "Player"
-
-
 
 ############################################################################
 #                                SYSTEMS

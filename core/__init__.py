@@ -1,6 +1,6 @@
 import logging
 from abc import abstractmethod
-from functools import cache
+from functools import lru_cache
 from itertools import count
 
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
@@ -14,37 +14,17 @@ created_entity_counter = count(0)
 #  out and I have a better idea of the things that can go wrong
 #########################################################################
 
-class EcclesComponentException(Exception):
-    def __init__(self, component, message):
+class EcclesException(Exception):
+    ecs_object: object
+
+    def __init__(self, ecs_object, message):
         """
-        :param component: component that raised the error
+        :param ecs_object: input that raised the error
         :param message: what error occurred
         """
-        self.component = component
+        self.ecs_object = ecs_object
         self.message = message
-        super().__init__(f"{self.component}: {self.message}")
-
-
-class EcclesSystemException(Exception):
-    def __init__(self, system, message):
-        """
-        :param system: system that raised the error
-        :param message: what error occurred
-        """
-        self.system = system
-        self.message = message
-        super().__init__(f"{self.system}: {self.message}")
-
-
-class EcclesFoundryException(Exception):
-    def __init__(self, foundry, message):
-        """
-        :param system: system that raised the error
-        :param message: what error occurred
-        """
-        self.foundry = foundry
-        self.message = message
-        super().__init__(f"{self.foundry}: {self.message}")
+        super().__init__(f"{self.ecs_object}: {self.message}")
 
 
 class ECS:
@@ -54,7 +34,16 @@ class ECS:
 
 
 class Component:
-    # used for components dataclass fields
+    __doc__ = """
+    ### Component ###
+    One of the three main parts of the ECS: the Component
+    The Component acts as a data container, it holds nothing but values, get/set functions and a paired entity id
+    it is suggested to decorate components with @dataclass and unpack the dicts in common as their args for consistency 
+    and access to dataclass methods methods such as repr, hash, eq
+    
+    Examples of components can be found in prefabs
+    """
+
     entity_id = None
 
     @classmethod
@@ -63,11 +52,11 @@ class Component:
 
     @abstractmethod
     def get_value(self):
-        pass
+        raise EcclesException(self, "get_value not implemented")
 
     @abstractmethod
     def set_value(self, *args, **kwargs):
-        pass
+        raise EcclesException(self, "set_value not implemented")
 
     def attach(self, entity_id):
         """
@@ -79,6 +68,11 @@ class Component:
         ECS.components[self.__class__.__name__].update({entity_id: self})
         self.entity_id = entity_id
 
+    def detach(self):
+        if self.__class__.__name__ not in ECS.components.keys():
+            return
+        ECS.components[self.__class__.__name__].pop(self.entity_id)
+
     def is_attached(self):
         """
         :return: is attached to an entity
@@ -87,6 +81,26 @@ class Component:
 
 
 class Entity:
+    __doc__ = """
+    ### Entity ###
+    One of the three main parts of the ECS: the Entity
+    It has a entity_id, and components
+    
+    An Entity can be instantiated in on of several ways.
+    
+        Entity base: Entity()
+        
+    It's uses *components so takes any number of Components
+        
+        Entity object with component objects: Entity(Position((1, 10, 0)), Rotation(), Velocity())
+
+        Entity with component types: Entity(Mesh, Lifetime, Transform)
+
+        Entity instantiated from archetype: Entity.from_archetype(*DefaultLivingCreatures.Player.value)
+        
+    components can be access like thus
+        player.Position
+    """
 
     def __init__(self, *components):
         self.entity_id = created_entity_counter.__next__()
@@ -108,41 +122,43 @@ class Entity:
                 self.__dict__.update({component.__class__.__name__: component})
                 log += f"{component.__class__.__name__}""\n\r"
             else:
-                raise EcclesComponentException(component,
-                                               "This object is not a Component Object, please check your code")
+                raise EcclesException(component,
+                                      "This object is not a Component Object, please check your code")
             ecs_logger.log(logging.DEBUG, log)
 
         ECS.entities[self.entity_id] = self
         return self
 
     def detach(self, component):
+        """
+        detaches the component and destroys it
+        :param component:
+        :return:
+        """
         if isinstance(component, str):
             ecs_logger.log(logging.DEBUG, f"detached {component} from Entity#{self.entity_id}")
-            self.__dict__.pop(component)
-            return
-
+            self.__dict__.pop(component).detach()
         elif isinstance(component, Component):
             ecs_logger.log(logging.DEBUG, f"detached {component.__class__.__name__} from Entity#{self.entity_id}")
-            self.__dict__.pop(component.__class__.__name__)
-            return
-
+            self.__dict__.pop(component.__class__.__name__).detach()
         elif isinstance(component, type):
             ecs_logger.log(logging.DEBUG, f"detached {component.__name__} from Entity#{self.entity_id}")
-            self.__dict__.pop(component.__name__)
-            return
+            self.__dict__.pop(component.__name__).detach()
+        else:
+            raise EcclesException(component, f" component not attached to {type(self)}#{self.entity_id}")
 
     def __str__(self):
-        out = f"{self.__class__.__name__}({[v for v in self.__dict__.values() if issubclass(v.__class__, Component)]})"
-        return out
+        return f"{self.__class__.__name__}({[v for v in self.__dict__.values() if issubclass(v.__class__, Component)]})"
 
     @classmethod
-    @cache
+    @lru_cache(30)  # caching for speed
     def from_archetype(cls, blueprint: list[Component], name=None, class_dict=None):
         """
-        :param blueprint: list of components to attach
-        :param name of the resulting _class:
-        :param class_dict dict to become the class variables:
-        :return:entity with archetype
+        :param: class_dict:
+        :param: name: name of the resulting type
+        :param: blueprint: list of components to attach
+        :param: class_dict dict to update class __dict__
+        :return: entity with archetype
         """
         cd = class_dict if class_dict else {}
         if name:
@@ -154,6 +170,17 @@ class Entity:
 
 
 class System:
+    __doc__ = """
+    ### System ###
+    One of the three main parts of the ECS: the System.
+    The System takes a list of components that it acts upon, 
+    this is for for the collector that then collects the 
+    relevant lists from the core ECS, this is because its 
+    faster to multiprocess a list of component than it is to 
+    iterate through each Entity and then check if they have 
+    component then get from the Entities __dict__
+    """
+
     def __init__(self, *managed):
         """
         :param managed: components this system checks for from component pools
