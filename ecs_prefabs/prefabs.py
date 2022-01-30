@@ -61,6 +61,11 @@ class Mass(Component):
         self.mass = mass
 
 
+@dataclass
+class Transform(Component):
+    pass
+
+
 #############################################################################
 #                                   Model
 #############################################################################
@@ -77,7 +82,7 @@ class Mesh(Component):
 
 @dataclass(**common.default_dataclass_args)
 class Scale(Component):
-    scale: tuple[float, float, float] = field(default=(1., 1., 1.), **common.default_field_args)
+    scale: tuple[float, float, float] = field(default_factory=tuple, **common.default_field_args)
 
     def get_value(self):
         return self.scale
@@ -89,6 +94,7 @@ class Scale(Component):
 ############################################################################
 #                                   Render
 ############################################################################
+
 
 @dataclass(**common.default_dataclass_args)
 class Light(Component):  # to emit light in range
@@ -161,7 +167,20 @@ class Tradable(Component):
 
 @dataclass(**common.default_dataclass_args)
 class Inventory(Component):
-    max_size: int = field(default=10, **common.default_field_args)
+    inventory: list = field(default_factory=dict, **common.default_field_args)
+
+
+@dataclass(**common.default_dataclass_args)
+class WieghtedInventory(Inventory):
+    max_weight: float = field(default=100., **common.default_field_args)
+    current_weight: float = field(default=0., **common.default_field_args)
+    inventory: list = field(default_factory=dict, **common.default_field_args)
+
+
+@dataclass(**common.default_dataclass_args)
+class SlottedInventory(Inventory):
+    number_of_slots: int = field(default=100, **common.default_field_args)
+    occupied_slots: int = field(default=0, **common.default_field_args)
     inventory: list = field(default_factory=dict, **common.default_field_args)
 
 
@@ -177,7 +196,7 @@ class Pane(Component):
 
 
 @dataclass(**common.default_dataclass_args)
-class Label(Component):
+class Label(Pane):
     text: str = field(default='', **common.default_field_args)
 
 
@@ -194,23 +213,48 @@ class Lifetime(Component):
 #                          Sound Components
 ############################################################################
 
-@dataclass(**common.default_dataclass_args)
-class AudioClip(Component):
+class Audio(Component):
     sound: str = field(default='', **common.default_field_args)
     volume: float = field(default=1, **common.default_field_args)
+    range: int = field(default=10, **common.default_field_args)
+
+
+@dataclass(**common.default_dataclass_args)
+class AudioClip(Audio):
     duration: float = field(default=100, **common.default_field_args)
-    range: int = field(default=10, **common.default_field_args)
 
 
 @dataclass(**common.default_dataclass_args)
-class AudioLoop(Component):
-    sound: str = field(default='', **common.default_field_args)
-    volume: float = field(default=1, **common.default_field_args)
-    range: int = field(default=10, **common.default_field_args)
+class AudioLoop(Audio):
+    pass
 
 
 @dataclass(**common.default_dataclass_args)
-class AudioInterval(Component):
+class AudioInterval(Audio):
+    pass
+
+
+############################################################################
+#                             AI Components
+############################################################################
+
+@dataclass(**common.default_dataclass_args)
+class FollowAI(Component):
+    pass
+
+
+@dataclass(**common.default_dataclass_args)
+class FleeAI(Component):
+    pass
+
+
+@dataclass(**common.default_dataclass_args)
+class HostileAI(Component):
+    pass
+
+
+@dataclass(**common.default_dataclass_args)
+class AmbientAI(Component):
     pass
 
 
@@ -220,6 +264,7 @@ class AudioInterval(Component):
 
 class DefaultLivingCreatures(Enum):
     Player = (Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), "Player"
+
 
 
 ############################################################################

@@ -1,5 +1,6 @@
 import logging
 from abc import abstractmethod
+from functools import cache
 from itertools import count
 
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
@@ -12,7 +13,6 @@ created_entity_counter = count(0)
 #  but will do this once the module is more fleshed
 #  out and I have a better idea of the things that can go wrong
 #########################################################################
-
 
 class EcclesComponentException(Exception):
     def __init__(self, component, message):
@@ -28,7 +28,6 @@ class EcclesComponentException(Exception):
 class EcclesSystemException(Exception):
     def __init__(self, system, message):
         """
-
         :param system: system that raised the error
         :param message: what error occurred
         """
@@ -58,6 +57,10 @@ class Component:
     # used for components dataclass fields
     entity_id = None
 
+    @classmethod
+    def name(cls):
+        return cls.__name__
+
     @abstractmethod
     def get_value(self):
         pass
@@ -67,12 +70,19 @@ class Component:
         pass
 
     def attach(self, entity_id):
+        """
+        attaches component to entity, generally used internally when applying components to entity object
+        :param entity_id:
+        """
         if self.__class__.__name__ not in ECS.components.keys():
             ECS.components[self.__class__.__name__] = {}
         ECS.components[self.__class__.__name__].update({entity_id: self})
         self.entity_id = entity_id
 
     def is_attached(self):
+        """
+        :return: is attached to an entity
+        """
         return self.entity_id is not None
 
 
@@ -84,6 +94,10 @@ class Entity:
         ecs_logger.log(logging.DEBUG, f"Entity#{self.entity_id} created")
 
     def attach(self, *components):
+        """
+        :param components: can be type extending Component or Component
+        :return: self
+        """
         self.entity_id = created_entity_counter.__next__()
         log = "Attached: \n\r"
         for component in components:
@@ -122,7 +136,14 @@ class Entity:
         return out
 
     @classmethod
+    @cache
     def from_archetype(cls, blueprint: list[Component], name=None, class_dict=None):
+        """
+        :param blueprint: list of components to attach
+        :param name of the resulting _class:
+        :param class_dict dict to become the class variables:
+        :return:entity with archetype
+        """
         cd = class_dict if class_dict else {}
         if name:
             e = type(name, (Entity,), cd)(*blueprint)
@@ -134,6 +155,9 @@ class Entity:
 
 class System:
     def __init__(self, *managed):
+        """
+        :param managed: components this system checks for from component pools
+        """
         self.managed_components = managed
         ECS.systems.append(self)
 
