@@ -1,8 +1,14 @@
+from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum
 
 import common
 from core import Component, System
+
+__doc__ = """
+### Prefabs ###
+Module that provides a bunch of prebuilt components, archetypes and systems
+"""
 
 
 #############################################################################
@@ -11,43 +17,50 @@ from core import Component, System
 
 # Components categorized by recommended system, this is a guide but not a rule
 # It's recommended to create new components that subclass Component rather than
-# subclass existing ones, again, this is structural advice and not a rule.
+# subclass existing ones, unless introducing new modules would result in lots
+# of code repetition, now, these are guidelines, not rules
 
 #############################################################################
 #                                   Locomotion
 #############################################################################
 
 @dataclass(**common.default_dataclass_args)
-class Position(Component):
-    position: tuple[float, float, float] = field(default=(0, 0, 0), **common.default_field_args)
+class Vectored(ABC, Component):
+    """
+    This is an abstract component that simple holds a vector,
+    to be used by components that are vector based
+    """
+
+    # currently, represents an x, y, z, will be swapped for a vector class
+    x: float = field(default=0, **common.default_field_args)
+    y: float = field(default=0, **common.default_field_args)
+    z: float = field(default=0, **common.default_field_args)
 
     def get_value(self):
-        return self.position
+        return self.x, self.y, self.z
 
-    def set_value(self, pos, lock=None):
-        self.position = pos
+    def set_value(self, vector):
+        self.x, self.y, self.x = vector
 
 
 @dataclass(**common.default_dataclass_args)
-class Rotation(Component):
-    rotation: tuple[float, float, float] = field(default=(0., 0., 0.), **common.default_field_args)
-
-    def get_value(self):
-        return self.rotation
-
-    def set_value(self, rotation):
-        self.rotation = rotation
+class Position(Vectored):
+    pass
 
 
 @dataclass(**common.default_dataclass_args)
-class Velocity(Component):
-    velocity: tuple[float, float, float] = field(default=(0., 0., 0.), **common.default_field_args)
+class Rotation(Vectored):
+    pass
 
-    def get_value(self):
-        return self.velocity
 
-    def set_value(self, velocity):
-        self.velocity = velocity
+@dataclass(**common.default_dataclass_args)
+class Velocity(Vectored):
+    pass
+
+
+@dataclass
+class Transform(Vectored):
+    pass
 
 
 @dataclass(**common.default_dataclass_args)
@@ -59,11 +72,6 @@ class Mass(Component):
 
     def set_value(self, mass):
         self.mass = mass
-
-
-@dataclass
-class Transform(Component):
-    pass
 
 
 #############################################################################
@@ -257,12 +265,14 @@ class HostileAI(Component):
 class AmbientAI(Component):
     pass
 
+
 ############################################################################
 #                               ARCHETYPES
 ############################################################################
 
 class DefaultLivingCreatures(Enum):
     Player = (Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), "Player"
+
 
 ############################################################################
 #                                SYSTEMS

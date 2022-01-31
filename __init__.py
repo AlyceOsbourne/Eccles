@@ -1,13 +1,10 @@
-from core import *
-from ecs_prefabs.prefabs import *
+import common
+import prefabs
+from core import Entity, Component, System
 
-__VERSION__ = {'MAJOR': 0, 'MINOR': 0, 'DEBUG': 0, 'DEVELOPMENT': 1}
-__PROJECT_NAME__ = "Eccles"
-__VERSION_STR__ = "v{}.{}.{}.{}".format(*__VERSION__.values())
+__doc__ = "\n\r"f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
 
-__doc__ = f"""{__PROJECT_NAME__}: {__VERSION_STR__}
-
-{__PROJECT_NAME__} is the Entity Component System Module of this project
+{common.__PROJECT_NAME__} is the Entity Component System Module of this project
 it provides a compositional system for creating entities that
 can be dynamically modified during runtime by adding and removing 
 Components that are automatically handled by Systems, this helps 
@@ -44,7 +41,7 @@ introduced with ease
 #   -> particle engine
 #   -> shader engine
 #
-# todo ecs_object capture
+# todo obj capture
 #   -> mappings keyboard, mouse, controller
 #
 # todo animation system
@@ -74,8 +71,11 @@ def init():
 
 
 def print_docs():
-    print(__doc__, Component.__doc__, Entity.__doc__, System.__doc__)
+    print(__doc__, Component.__doc__, Entity.__doc__, System.__doc__, prefabs.__doc__)
 
 
 if __name__ == "__main__":
     print_docs()
+
+c = Component()
+print(c.get_value())
