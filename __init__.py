@@ -77,5 +77,3 @@ def print_docs():
 if __name__ == "__main__":
     print_docs()
 
-c = Component()
-print(c.get_value())
