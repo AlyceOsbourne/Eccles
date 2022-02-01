@@ -1,10 +1,9 @@
-import common
 import prefabs
 from core import Entity, Component, System
 
-__doc__ = "\n\r"f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
+__doc__ = "\n\r" f"""{prefabs.common.__PROJECT_NAME__}: {prefabs.common.__VERSION_STR__}
 
-{common.__PROJECT_NAME__} is the Entity Component System Module of this project
+{prefabs.common.__PROJECT_NAME__} is the Entity Component System Module of this project
 it provides a compositional system for creating entities that
 can be dynamically modified during runtime by adding and removing 
 Components that are automatically handled by Systems, this helps 
@@ -16,7 +15,7 @@ introduced with ease
 #########################################################################
 # The general idea of this module is to provide a fast, easy to use ECS
 # that allows the dynamic creation, modification and cleanup of entities
-# and components, the initial build will be geared towards games, but I
+# and _components, the initial build will be geared towards games, but I
 # will later include a UI app ECS as I feel it could be of use there too
 #
 # todo study into LLVMLite for JIT capabilities, candidates for jit:
@@ -61,10 +60,10 @@ def init():
     # -> load definitions from file
 
     print("Loading definitions")
-    # -> create components from definitions
+    # -> create _components from definitions
 
     print("running component factory")
-    # -> create entity archetypes from definitions and components
+    # -> create entity archetypes from definitions and _components
 
     print("Running entity factory")
     # -> load systems from definitions and link to relevant lists and dicts
@@ -77,3 +76,9 @@ def print_docs():
 if __name__ == "__main__":
     print_docs()
 
+e1 = Entity.from_archetype(*prefabs.DefaultLivingCreatures.Player.value)
+e2 = Entity.from_archetype(*prefabs.DefaultLivingCreatures.Player.value)
+
+print(e1.entity_id, e2.entity_id)
+s = prefabs.MotionSystem()
+print(s.collect())

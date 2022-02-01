@@ -1,1 +1,1 @@
-from core.core_objects import Entity, Component, System, ECS, CoreException
+from core.core_objects import Entity, Component, System, CoreException

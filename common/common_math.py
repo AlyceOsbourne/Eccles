@@ -1,3 +1,6 @@
+import math
+
+
 #########################################################################
 # Math Functions
 #########################################################################
@@ -6,7 +9,7 @@
 #########################################################################
 # Math Objects
 #########################################################################
-import math
+
 
 
 class Vector:
@@ -21,6 +24,7 @@ class Vector:
 
     @property
     def magnitude(self):
+        """ :return"""
         return math.sqrt(sum((v ** 2 for v in self.get())))
 
     @magnitude.setter
@@ -52,11 +56,11 @@ class Vector:
         return cls(x, y, z)
 
     @classmethod
-    def from_radians(cls):
+    def from_radians(cls, rads):
         pass
 
     @classmethod
-    def from_degrees(cls):
+    def from_degrees(cls, deg):
         pass
 
     def normalize(self):
@@ -69,6 +73,11 @@ class Vector:
     def dot_product(self):
         pass
 
+    def __aenter__(self):
+        pass
+
+    def __mul__(self, other):
+        pass
 
 class Matrix:
     pass

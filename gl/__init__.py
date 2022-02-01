@@ -1,6 +1,5 @@
 import moderngl_window as mglw
 
-
 class Test(mglw.WindowConfig):
     gl_version = (3, 3)
     window_size = (1920, 1080)

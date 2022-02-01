@@ -1,11 +1,14 @@
 import logging
 import sys
 from abc import abstractmethod
-from functools import lru_cache
 from itertools import count
+from threading import Thread
 
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
-created_entity_counter = count(0)
+entity_count = count()
+systems = []
+components = {}
+entities = {}
 
 
 #########################################################################
@@ -30,21 +33,15 @@ class CoreException(Exception):
         super().__init__(out)
 
 
-class ECS:
-    components = {}
-    entities = {}
-    systems = []
-
-
 class Component:
     __doc__ = """
     ### Component ###
     One of the three main parts of the ECS: the Component
     The Component acts as a data container, it holds nothing but values, get/set functions and a paired entity id
-    it is suggested to decorate components with @dataclass and unpack the dicts in common.common_defaults as their args 
+    it is suggested to decorate _components with @dataclass and unpack the dicts in common.common_defaults as their args 
     for consistency and access to dataclass methods methods such as repr, hash, eq
     
-    Examples of components can be found in prefabs
+    Examples of _components can be found in prefabs
     """
 
     entity_id = None
@@ -63,18 +60,18 @@ class Component:
 
     def attach(self, entity_id):
         """
-        attaches component to entity, generally used internally when applying components to entity object
+        attaches component to entity, generally used internally when applying _components to entity object
         :param entity_id:
         """
-        if self.__class__.__name__ not in ECS.components.keys():
-            ECS.components[self.__class__.__name__] = {}
-        ECS.components[self.__class__.__name__].update({entity_id: self})
+        if self.__class__.__name__ not in components.keys():
+            components[self.__class__.__name__] = {}
+        components[self.__class__.__name__].update({entity_id: self})
         self.entity_id = entity_id
 
     def detach(self):
-        if self.__class__.__name__ not in ECS.components.keys():
+        if self.__class__.__name__ not in components.keys():
             return
-        ECS.components[self.__class__.__name__].pop(self.entity_id)
+        components[self.__class__.__name__].pop(self.entity_id)
 
     def is_attached(self):
         """
@@ -87,13 +84,13 @@ class Entity:
     __doc__ = """
     ### Entity ###
     One of the three main parts of the ECS: the Entity
-    It has a entity_id, and components
+    It has a entity_id, and _components
     
     An Entity can be instantiated in on of several ways.
     
         Entity base: Entity()
         
-    It's uses *components so takes any number of Components
+    It's uses *_components so takes any number of Components
         
         Entity object with component objects: Entity(Position((1, 10, 0)), Rotation(), Velocity())
 
@@ -101,23 +98,22 @@ class Entity:
 
         Entity instantiated from archetype: Entity.from_archetype(*DefaultLivingCreatures.Player.value)
         
-    components can be access like thus
+    _components can be access like thus
         player.Position
     """
 
-    def __init__(self, *components):
-        self.entity_id = created_entity_counter.__next__()
-        self.attach(*components)
-        ecs_logger.log(logging.DEBUG, f"Entity#{self.entity_id} created")
+    def __init__(self, *_components):
+        self.entity_id = entity_count.__next__()
+        self.attach(*_components)
+        print(logging.DEBUG, f"Entity#{self.entity_id} created")
 
-    def attach(self, *components):
+    def attach(self, *_components):
         """
         :param components: can be type extending Component or Component
         :return: self
         """
-        self.entity_id = created_entity_counter.__next__()
         log = "Attached: \n\r"
-        for component in components:
+        for component in _components:
             if isinstance(component, type):
                 component = component()
             if issubclass(component.__class__, Component):
@@ -127,8 +123,7 @@ class Entity:
             else:
                 raise CoreException(component, "This object is not a Component Object, please check your code")
             ecs_logger.log(logging.DEBUG, log)
-
-        ECS.entities[self.entity_id] = self
+        entities[self.entity_id] = self
         return self
 
     def detach(self, component):
@@ -153,31 +148,30 @@ class Entity:
         return f"{self.__class__.__name__}({[v for v in self.__dict__.values() if issubclass(v.__class__, Component)]})"
 
     @classmethod
-    @lru_cache(30)  # caching for speed
     def from_archetype(cls, blueprint: list[Component], name=None, class_dict=None):
         """
         :param: class_dict:
         :param: name: name of the resulting type
-        :param: blueprint: list of components to attach
+        :param: blueprint: list of _components to attach
         :param: class_dict dict to update class __dict__
         :return: entity with archetype
         """
-        cd = class_dict if class_dict else {}
         if name:
-            e = type(name, (Entity,), cd)(*blueprint)
+            e = type(name, (Entity,), class_dict if class_dict else {})(*blueprint)
         else:
             e = Entity(*blueprint)
-            e.__dict__.update(cd)
+            if class_dict:
+                e.__dict__.update(class_dict)
         return e
 
 
-class System:
+class System(Thread):
     # todo finish core system
 
     __doc__ = """
     ### System ###
     One of the three main parts of the ECS: the System.
-    The System takes a list of components that it acts upon, 
+    The System takes a list of _components that it acts upon, 
     this is for for the collector that then collects the 
     relevant lists from the core ECS, this is because its 
     faster to multiprocess a list of component than it is to 
@@ -187,19 +181,49 @@ class System:
 
     def __init__(self, *managed):
         """
-        :param managed: components this system checks for from component pools
+        :param managed: _components this system checks for from component pools
         """
-        self.managed_components = managed
-        ECS.systems.append(self)
+        super().__init__(name=self.__class__.__name__, daemon=True)
+        self.managed_components = [c for c in managed if issubclass(c, Component)]
+        for c in self.managed_components:
+            if c.__name__ not in components.keys():
+                components[c.__name__] = []
+        systems.append(self)
+        self.running = False
 
     def collect(self):
-        return [ECS.components[key.__class__.__name__] for key in self.managed_components]
+        collected = tuple(components[key.__name__] for key in self.managed_components)
+        # now we need to reduce these by making sure that entityID is in all so we are not , this should be as simple as
+        # adding all of the values of the keys and converting to a set and then collecting those
+        keys = []
+        for d in collected:
+            for k in list(d.keys()):
+                keys.append(k)
+
+        keys = set(keys)
+        return tuple(
+            [{key: components[component.__name__][key]} for key in keys] for component in self.managed_components)
+
+    def update(self, *component_list):
+        self.process(component_list if component_list else self.collect())
 
     @abstractmethod
-    def update(self, c):
-        print(f"{self.__class__.__name__}"
-              " does not seem to implement the update function OR said implementation of update calls super")
+    def process(self, *args, **kwargs):
+        """
+        method to be overloaded y user, here you will receive a tuple of dicts
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        pass
 
-    def __call__(self, *args, **kwargs):  # we call up on the system to collect the data and process via the update
-        # function
-        self.update(self.collect())
+    def start(self):
+        super().start()
+
+    def run(self):
+        self.running = True
+        while self.running:
+            self.update()
+
+    def __str__(self):
+        return f"{self.__class__.__name__}: {[c.__name__ for c in self.managed_components]}"
