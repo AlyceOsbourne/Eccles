@@ -25,7 +25,7 @@ class Vector:
     @property
     def __len__(self):
         """ :return"""
-        return math.sqrt(sum((v ** 2 for v in self.get())))
+        return math.fabs(math.sqrt(sum((v ** 2 for v in self.get()))))
 
     @__len__.setter
     def __len__(self, magnitude):
@@ -39,19 +39,22 @@ class Vector:
         self.y *= magnitude
         self.z *= magnitude
 
+    def __radd__(self, other):
+        return self + other
+
     def __add__(self, other):
-        if isinstance(other, Vector):
-            self.x += other if isinstance(other, int) or isinstance(other, float) \
-                else other[0] if isinstance(other, Iterable) \
-                else other.x
+        self.x += other if isinstance(other, int) or isinstance(other, float) \
+            else other[0] if isinstance(other, Iterable) \
+            else other.x
 
-            self.y += other if isinstance(other, int) or isinstance(other, float) \
-                else other[1] if isinstance(other, Iterable) \
-                else other.y
+        self.y += other if isinstance(other, int) or isinstance(other, float) \
+            else other[1] if isinstance(other, Iterable) \
+            else other.y
 
-            self.x += other if isinstance(other, int) or isinstance(other, float) \
-                else other[2] if isinstance(other, Iterable) \
-                else other.y
+        self.x += other if isinstance(other, int) or isinstance(other, float) \
+            else other[2] if isinstance(other, Iterable) \
+            else other.y
+        return self
 
     def __mul__(self, other):
 

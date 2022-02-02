@@ -1,3 +1,4 @@
+import common
 import prefabs
 from core import Entity, Component, System
 
@@ -75,3 +76,5 @@ def print_docs():
 
 if __name__ == "__main__":
     print_docs()
+    vecs = [common.Vector(10, 10, 10), common.Vector(10, 10, 10)]
+    print(sum(vecs))
