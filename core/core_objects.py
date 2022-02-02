@@ -105,7 +105,6 @@ class Entity:
     def __init__(self, *_components):
         self.entity_id = entity_count.__next__()
         self.attach(*_components)
-        print(logging.DEBUG, f"Entity#{self.entity_id} created")
 
     def attach(self, *_components):
         """
@@ -164,6 +163,11 @@ class Entity:
                 e.__dict__.update(class_dict)
         return e
 
+    def __del__(self):
+        for i in self.__dict__.values():
+            if issubclass(i.__class__, Component):
+                i.detach()
+
 
 class System(Thread):
     # todo finish core system
@@ -192,17 +196,12 @@ class System(Thread):
         self.running = False
 
     def collect(self):
-        collected = tuple(components[key.__name__] for key in self.managed_components)
-        # now we need to reduce these by making sure that entityID is in all so we are not , this should be as simple as
-        # adding all of the values of the keys and converting to a set and then collecting those
-        keys = []
-        for d in collected:
-            for k in list(d.keys()):
-                keys.append(k)
+        # components[key] yields a dict with [entity_id: Component]
+        # collected contains an indeterminate number of dicts, I want to compare the lists of keys
+        # and return a named tuple of lists of values in those dicts for each key that is in all dicts
+        # this way we can iterate through each one and apply data
+        return tuple(components[key.__name__] for key in self.managed_components)
 
-        keys = set(keys)
-        return tuple(
-            [{key: components[component.__name__][key]} for key in keys] for component in self.managed_components)
 
     def update(self, *component_list):
         self.process(component_list if component_list else self.collect())

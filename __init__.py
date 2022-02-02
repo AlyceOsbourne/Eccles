@@ -75,10 +75,3 @@ def print_docs():
 
 if __name__ == "__main__":
     print_docs()
-
-e1 = Entity.from_archetype(*prefabs.DefaultLivingCreatures.Player.value)
-e2 = Entity.from_archetype(*prefabs.DefaultLivingCreatures.Player.value)
-
-print(e1.entity_id, e2.entity_id)
-s = prefabs.MotionSystem()
-print(s.collect())
