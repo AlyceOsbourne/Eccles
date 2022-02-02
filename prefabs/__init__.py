@@ -1,4 +1,3 @@
-from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -7,7 +6,7 @@ from core import Component, System
 
 __doc__ = """
 ### Prefabs ###
-Module that provides a bunch of prebuilt components, archetypes and systems
+Module that provides a bunch of prebuilt _components, archetypes and systems
 """
 
 
@@ -16,7 +15,7 @@ Module that provides a bunch of prebuilt components, archetypes and systems
 #############################################################################
 
 # Components categorized by recommended system, this is a guide but not a rule
-# It's recommended to create new components that subclass Component rather than
+# It's recommended to create new _components that subclass Component rather than
 # subclass existing ones, unless introducing new modules would result in lots
 # of code repetition, now, these are guidelines, not rules
 
@@ -25,10 +24,10 @@ Module that provides a bunch of prebuilt components, archetypes and systems
 #############################################################################
 
 @dataclass(**common.default_dataclass_args)
-class Vectored(ABC, Component):
+class Vectored(Component):
     """
     This is an abstract component that simple holds a vector,
-    to be used by components that are vector based
+    to be used by _components that are vector based
     """
 
     # currently, represents an x, y, z, will be swapped for a vector class
@@ -271,7 +270,7 @@ class AmbientAI(Component):
 ############################################################################
 
 class DefaultLivingCreatures(Enum):
-    Player = (Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), "Player"
+    Player = ((Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), 'Player')
 
 
 ############################################################################
@@ -282,9 +281,6 @@ class DefaultLivingCreatures(Enum):
 class MotionSystem(System):
     def __init__(self):
         super().__init__(Position, Rotation, Velocity)
-
-    def update(self, c):
-        pass
 
 
 class AudioSystem(System):
