@@ -113,9 +113,26 @@ class Vector:
             self.y /= mag
             self.z /= mag
 
-    def dot_product(self):
-        pass
+    def dot_product(self, other):
+        '''
+        :param other Vector or Tuple[float, float, float]:
+        :return: tuple of the dot product of input
+        '''
+        a = self.get()
+        b = other.get() if isinstance(other, Vector) else other
+        return tuple(aterm * bterm for aterm, bterm in zip(a, b))
 
+    def cross_product(self, other):
+        '''
+        :param other Vector or Tuple[float, float, float]:
+        :return: tuple of the cross product of input
+        '''
+        sx, sy, sz = self.get()
+        ox, oy, oz = other.get() if isinstance(other, Vector) else other
+        x = sy * oz - sz * oy
+        y = sz * ox - sx * oz
+        z = sx * oy - sy * ox
+        return x, y, z
 
 class Matrix:
     pass

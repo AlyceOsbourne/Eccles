@@ -23,15 +23,15 @@ entities = {}
 class CoreException(Exception):
     obj: object
 
-    def __init__(self, obj, message):
+    def __init__(self, obj, message, *args, **kwargs):
         """
         :param obj: input that raised the error
         :param message: what error occurred
         """
         self.obj = obj
-        self.frame = sys._getframe(1).f_code.co_name
+        self.frame = sys._getframe(1).f_code.co_name  # lets us get the name of the failed code
         self.message = message
-        out = "\n\r" f"{common.__PROJECT_NAME__} {common.__VERSION_STR__}" "\n\r" f"> Object: {self.obj}" "\n\r->" f" Method: {self.frame}:" "\n\r-->" f" {self.message}"
+        out = "\n\r" f"{common.__PROJECT_NAME__} {common.__VERSION_STR__}" "\n\r" f"> Object: {self.obj}" "\n\r->" f" Method: {self.frame}({args}, {kwargs}):" "\n\r-->" f" {self.message} "
         super().__init__(out)
 
 
