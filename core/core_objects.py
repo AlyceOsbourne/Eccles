@@ -4,6 +4,8 @@ from abc import abstractmethod
 from itertools import count
 from threading import Thread
 
+import common
+
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
 entity_count = count()
 systems = []
@@ -29,7 +31,7 @@ class CoreException(Exception):
         self.obj = obj
         self.frame = sys._getframe(1).f_code.co_name
         self.message = message
-        out = "\n\r" f"> Object: {self.obj}" "\n\r->" f" Method: {self.frame}:" "\n\r-->" f" {self.message}"
+        out = "\n\r" f"{common.__PROJECT_NAME__} {common.__VERSION_STR__}" "\n\r" f"> Object: {self.obj}" "\n\r->" f" Method: {self.frame}:" "\n\r-->" f" {self.message}"
         super().__init__(out)
 
 

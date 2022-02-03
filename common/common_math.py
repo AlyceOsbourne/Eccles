@@ -51,9 +51,9 @@ class Vector:
             else other[1] if isinstance(other, Iterable) \
             else other.y
 
-        self.x += other if isinstance(other, int) or isinstance(other, float) \
+        self.z += other if isinstance(other, int) or isinstance(other, float) \
             else other[2] if isinstance(other, Iterable) \
-            else other.y
+            else other.z
         return self
 
     def __mul__(self, other):
@@ -66,9 +66,9 @@ class Vector:
             else other[1] if isinstance(other, Iterable) \
             else other.y
 
-        self.x *= other if isinstance(other, int) or isinstance(other, float) \
+        self.z *= other if isinstance(other, int) or isinstance(other, float) \
             else other[2] if isinstance(other, Iterable) \
-            else other.y
+            else other.z
 
     def __str__(self):
         return f"{self.__class__.__name__}(x={self.x}, y={self.y}, z={self.z})[magnitude={self.__len__}, angle={self.angle_degrees}]"

@@ -2,9 +2,9 @@ import common
 import prefabs
 from core import Entity, Component, System
 
-__doc__ = "\n\r" f"""{prefabs.common.__PROJECT_NAME__}: {prefabs.common.__VERSION_STR__}
+__doc__ = "\n\r" f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
 
-{prefabs.common.__PROJECT_NAME__} is the Entity Component System Module of this project
+{common.__PROJECT_NAME__} is the Entity Component System Module of this project
 it provides a compositional system for creating entities that
 can be dynamically modified during runtime by adding and removing 
 Components that are automatically handled by Systems, this helps 
@@ -20,12 +20,13 @@ introduced with ease
 # will later include a UI app ECS as I feel it could be of use there too
 #
 # todo study into LLVMLite for JIT capabilities, candidates for jit:
-#   -> system update functions
-#   -> entity archetype instantiation
-#   -> Components? As we will always know their core values?
+#   -> core system functions
+#       -> collect
+#           collect needs to disregard components that are not shared along all lists
+#       -> process
+#           should be a generic method tto be implemented byy subclasses
 #
 # todo create common math functions
-#   -> vector math, unit vector conversions
 #   -> various curves, waves and linear functions
 #   -> geometry for shape, vert, model, path etc
 #
@@ -76,5 +77,3 @@ def print_docs():
 
 if __name__ == "__main__":
     print_docs()
-    vecs = [common.Vector(10, 10, 10), common.Vector(10, 10, 10)]
-    print(sum(vecs))
