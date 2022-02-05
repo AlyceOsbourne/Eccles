@@ -270,7 +270,7 @@ class AmbientAI(Component):
 ############################################################################
 
 class DefaultLivingCreatures(Enum):
-    Player = ((Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), 'Player')
+    Player = (Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), 'Player'
 
 
 ############################################################################

@@ -1,16 +1,20 @@
 import common
+import core
+import events
 import prefabs
-from core import Entity, Component, System
+from core import Entity, Component, System, CoreException
 
 __doc__ = "\n\r" f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
 
-{common.__PROJECT_NAME__} is the Entity Component System Module of this project
-it provides a compositional system for creating entities that
-can be dynamically modified during runtime by adding and removing 
-Components that are automatically handled by Systems, this helps 
-decouple data from functions, and allows for new modules to be 
-introduced with ease 
+ {common.__PROJECT_NAME__} is the Entity Component System Module of this project
+ it provides a compositional system for creating entities that
+ can be dynamically modified during runtime by adding and removing 
+ Components that are automatically handled by Systems, this helps 
+ decouple data from functions, and allows for new modules to be 
+ introduced with ease 
 """
+
+__all__ = ['common', 'events', 'prefabs', 'Entity', 'Component', 'System', 'CoreException']
 
 
 #########################################################################
@@ -20,6 +24,8 @@ introduced with ease
 # will later include a UI app ECS as I feel it could be of use there too
 #
 # todo study into LLVMLite for JIT capabilities, candidates for jit:
+#   -> write core thread manager
+#   -> write core event manager
 #   -> core system functions
 #       -> collect
 #           collect needs to disregard components that are not shared along all lists
@@ -36,8 +42,8 @@ introduced with ease
 #   -> string randomizer
 #
 # todo render system
-#   -> OpenGL or Vulkan?
-#   -> *.OBJ loading and manipulation
+#   -> OpenGL or Vulkan? - answer appears to be moderngl?
+#   -> *.OBJ loading and manipulation - pywavefront
 #   -> procedural mesh generation
 #   -> particle engine
 #   -> shader engine
@@ -72,8 +78,9 @@ def init():
 
 
 def print_docs():
-    print(__doc__, Component.__doc__, Entity.__doc__, System.__doc__, prefabs.__doc__)
+    print(__doc__, core.core_objects.__doc__)
 
 
 if __name__ == "__main__":
     print_docs()
+
