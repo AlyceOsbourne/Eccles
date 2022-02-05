@@ -81,11 +81,11 @@ def docs():
     return __doc__ + core.core_objects.__doc__ + common.__doc__
 
 
-def to_wiki():
+def _to_wiki():
     with open("C:\\Users\\Alyce\\PycharmProjects\\Eccles.wiki\\" + "ECS.md", 'w') as f:
         f.write(docs())
 
 
 if __name__ == "__main__":
     print(docs())
-    to_wiki()
+    _to_wiki()

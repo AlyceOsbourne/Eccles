@@ -23,8 +23,7 @@ entities = {}
 #  out and I have a better idea of the things that can go wrong
 #########################################################################
 class CoreException(Exception):
-    """
-    # CoreException #
+    """# CoreException #
 
     Core exception for the ECS module, called by Entity, Component and System
     will tell you what object and function failed, what the parameters were (if supplied)
@@ -54,8 +53,7 @@ class CoreException(Exception):
 # Core objects
 #########################################################################
 class Component:
-    """
-    # Component #
+    """# Component #
 
     This is the core data holder within the system, systems will enact upon the data stored in components,
     and generally, except for special cases, should contain no methods besides getters/setters
@@ -112,8 +110,7 @@ class Component:
 
 
 class Entity:
-    """
-    # Entity #
+    """# Entity #
 
     Core entity of the ECS system, this class is an intermediary object that links Components with Systems, in a fashion
     that allows the user to perform operations easily on an entity by entity basis.
@@ -213,8 +210,7 @@ class Entity:
 
 
 class System(Thread):
-    """
-    # System #
+    """# System #
 
     Core System object for the ECS system,
     this deals in data management and manipulation and only ever operates on a predefined set of components
@@ -280,7 +276,7 @@ class System(Thread):
 
 
 __doc__ = """
-    Core module that contains the core objects that makes up the ECS system, contains:
+Core module that contains the core objects that makes up the ECS system, contains:
 """
 
 for c in common.get_class_docs(__name__):
