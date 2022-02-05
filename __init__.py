@@ -77,10 +77,15 @@ def init():
     # -> load systems from definitions and link to relevant lists and dicts
 
 
-def print_docs():
-    print(__doc__, core.core_objects.__doc__)
+def docs():
+    return __doc__ + core.core_objects.__doc__ + common.__doc__
+
+
+def to_wiki():
+    with open("C:\\Users\\Alyce\\PycharmProjects\\Eccles.wiki\\" + "ECS.md", 'w') as f:
+        f.write(docs())
 
 
 if __name__ == "__main__":
-    print_docs()
-
+    print(docs())
+    to_wiki()

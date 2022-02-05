@@ -11,6 +11,11 @@ import math
 #########################################################################
 from typing import Iterable
 
+__doc__ = """# common math functions # 
+
+    script for math functions that will see regular use
+    
+"""
 
 class Vector:
 

@@ -4,32 +4,9 @@ from enum import Enum
 import common
 from core import Component, System
 
-__doc__ = """
-### Prefabs ###
-Module that provides a bunch of prebuilt _components, archetypes and systems
-"""
-
-
-#############################################################################
-#                                    COMPONENTS
-#############################################################################
-
-# Components categorized by recommended system, this is a guide but not a rule
-# It's recommended to create new _components that subclass Component rather than
-# subclass existing ones, unless introducing new modules would result in lots
-# of code repetition, now, these are guidelines, not rules
-
-#############################################################################
-#                                   Locomotion
-#############################################################################
 
 @dataclass(**common.default_dataclass_args)
 class Vectored(Component):
-    """
-    This is an abstract component that simple holds a vector,
-    to be used by _components that are vector based
-    """
-
     # currently, represents an x, y, z, will be swapped for a vector class
     x: float = field(default=0, **common.default_field_args)
     y: float = field(default=0, **common.default_field_args)
@@ -46,16 +23,13 @@ class Vectored(Component):
 class Position(Vectored):
     pass
 
-
 @dataclass(**common.default_dataclass_args)
 class Rotation(Vectored):
     pass
 
-
 @dataclass(**common.default_dataclass_args)
 class Velocity(Vectored):
     pass
-
 
 @dataclass
 class Transform(Vectored):
@@ -271,7 +245,11 @@ class AmbientAI(Component):
 
 class DefaultLivingCreatures(Enum):
     Player = (Position, Rotation, Velocity, Mesh, Scale((1, 2, 1)), Inventory), 'Player'
-
+    """# DefaultLivingCreatures #
+    an enumerator of of archetype blueprints for the Entity.from_archetype command
+    >>> Entity.from_archetype(**DefaultLivingCreatures.|name|.value) 
+        where |name| is is the name of the archetype  
+    """
 
 ############################################################################
 #                                SYSTEMS
@@ -293,3 +271,11 @@ class TransformSystem(System):
 
 class RenderSystem(System):
     pass
+
+
+__doc__ = """ ### Prefabs ###
+    Module that provides a bunch of prebuilt _components, archetypes and systems
+"""
+
+for c in common.get_class_docs(__name__):
+    __doc__ += str(c)

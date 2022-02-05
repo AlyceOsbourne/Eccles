@@ -27,11 +27,14 @@ class CoreException(Exception):
     # CoreException #
 
     Core exception for the ECS module, called by Entity, Component and System
+    will tell you what object and function failed, what the parameters were (if supplied)
+    and a message of what went wrong
+
 
     >>> CoreException(object, message, *args, **kwargs
         object = the object that has errored
         message = the message to be printed
-        *args/**kwargs the args passed to the errored object"""
+        *args/**kwargs = the args passed to the errored object"""
 
     obj: object
 
@@ -56,6 +59,10 @@ class Component:
 
     This is the core data holder within the system, systems will enact upon the data stored in components,
     and generally, except for special cases, should contain no methods besides getters/setters
+
+    during thair init they add themselves to lists of their component type, this is so Systems can operate on them faster
+    rather than having to do lossy lookups on entities aka if Entity has such and such do thing
+    this way our systems only ever operate on the components used in said systems
 
     has abstract methods:
 
@@ -111,7 +118,22 @@ class Entity:
     Core entity of the ECS system, this class is an intermediary object that links Components with Systems, in a fashion
     that allows the user to perform operations easily on an entity by entity basis.
 
-    This class shouldn't have to be expanded upon, composed and managed
+    This class shouldn't have to be expanded upon as they are composed with components and managed by systems and
+    all attached components become members of the Entity by default
+
+    >>> Entity(*_components)
+        *_components = any number of components to be attached to the entity
+
+    >>> attach(*_components)
+        *_componets = a list of component to attach to the entity
+
+    >>> detach(*_components)
+        detaches components from the entity
+
+    >>> from_archetype(bluprint, name, class_dict)
+        bluprint = a list of component to assign to the entity
+        name = the name of the resulting type
+        class_dict = a dict of objects to add as members of the class
     """
 
     def __init__(self, *_components):
@@ -137,21 +159,30 @@ class Entity:
         entities[self.entity_id] = self
         return self
 
-    def detach(self, component):
+    def detach(self, _components):
         """
         detaches the component and destroys it
-        :param component:
+        :param _components:
         :return:
         """
+        if len(_components) == 1:
+            _components = _components[0]
+
         if isinstance(component, str):
             ecs_logger.log(logging.DEBUG, f"detached {component} from Entity#{self.entity_id}")
             self.__dict__.pop(component).__detach__()
+
         elif isinstance(component, Component):
             ecs_logger.log(logging.DEBUG, f"detached {component.__class__.__name__} from Entity#{self.entity_id}")
             self.__dict__.pop(component.__class__.__name__).__detach__()
+
         elif isinstance(component, type):
             ecs_logger.log(logging.DEBUG, f"detached {component.__name__} from Entity#{self.entity_id}")
             self.__dict__.pop(component.__name__).__detach__()
+
+        elif isinstance(_components, list) or isinstance(_components, tuple) or isinstance(_components, set):
+            for c in _components:
+                self.detach(c)
         else:
             raise CoreException(component, f" component not attached to {type(self)}#{self.entity_id}")
 
@@ -182,6 +213,27 @@ class Entity:
 
 
 class System(Thread):
+    """
+    # System #
+
+    Core System object for the ECS system,
+    this deals in data management and manipulation and only ever operates on a predefined set of components
+    this helps keep data organized, allows for modularization and ease of updating
+
+    >>> collect()
+        method used to collect components from lists and organize the data for processing
+
+    >>> update(*component_list)
+        if provided a list of components (in the correct structure for said system)
+        will perform systems update operations on them, if not provided args will
+        process in the default fashion by using the collect method
+
+    >>> start()
+        starts the processing thread, small amount of init
+
+    >>> run()
+        triggered by start method and runs the update cycle
+    """
 
     def __init__(self, *managed):
         """
@@ -227,12 +279,9 @@ class System(Thread):
         return f"{self.__class__.__name__}: {[_c.__name__ for _c in self.managed_components]}"
 
 
-def entity_component(entity, component_name):
-    return type(bases=(Component, entity), name=component_name)
-
-
 __doc__ = """
-Core module that contains the core objects that makes up the ECS system, contains:
+    Core module that contains the core objects that makes up the ECS system, contains:
 """
+
 for c in common.get_class_docs(__name__):
     __doc__ += " " + str(c)
