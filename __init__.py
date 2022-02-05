@@ -4,7 +4,7 @@ import events
 import prefabs
 from core import Entity, Component, System, CoreException
 
-__doc__ = "\n\r" f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
+__doc__ = "\n\r" f"""### {common.__PROJECT_NAME__}: {common.__VERSION_STR__} ###
 
  {common.__PROJECT_NAME__} is the Entity Component System Module of this project
  it provides a compositional system for creating entities that
@@ -12,6 +12,7 @@ __doc__ = "\n\r" f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
  Components that are automatically handled by Systems, this helps 
  decouple data from functions, and allows for new modules to be 
  introduced with ease 
+ 
 """
 
 __all__ = ['common', 'events', 'prefabs', 'Entity', 'Component', 'System', 'CoreException']
@@ -66,24 +67,6 @@ __todo__ = """
    * colliders
    * interactions
 """
-
-
-#########################################################################
-# Init
-#########################################################################
-
-def init():
-    print("Starting init")
-    # -> load definitions from file
-
-    print("Loading definitions")
-    # -> create _components from definitions
-
-    print("running component factory")
-    # -> create entity archetypes from definitions and _components
-
-    print("Running entity factory")
-    # -> load systems from definitions and link to relevant lists and dicts
 
 
 def docs():

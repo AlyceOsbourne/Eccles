@@ -23,17 +23,18 @@ entities = {}
 #  out and I have a better idea of the things that can go wrong
 #########################################################################
 class CoreException(Exception):
-    """# CoreException #
+    """### CoreException ###
 
-    Core exception for the ECS module, called by Entity, Component and System
-    will tell you what object and function failed, what the parameters were (if supplied)
-    and a message of what went wrong
-
-
+  Core exception for the ECS module, called by Entity, Component and System
+  will tell you what object and function failed, what the parameters were (if supplied)
+  and a message of what went wrong
+ 
     >>> CoreException(object, message, *args, **kwargs
         object = the object that has errored
         message = the message to be printed
-        *args/**kwargs = the args passed to the errored object"""
+        *args/**kwargs = the args passed to the errored object
+
+        """
 
     obj: object
 
@@ -53,24 +54,23 @@ class CoreException(Exception):
 # Core objects
 #########################################################################
 class Component:
-    """# Component #
+    """### Component ###
+    
+This is the core data holder within the system, systems will enact upon the data stored in components,
+and generally, except for special cases, should contain no methods besides getters/setters
 
-    This is the core data holder within the system, systems will enact upon the data stored in components,
-    and generally, except for special cases, should contain no methods besides getters/setters
+during thair init they add themselves to lists of their component type, this is so Systems can operate on them faster
+rather than having to do lossy lookups on entities aka if Entity has such and such do thing
+this way our systems only ever operate on the components used in said systems
 
-    during thair init they add themselves to lists of their component type, this is so Systems can operate on them faster
-    rather than having to do lossy lookups on entities aka if Entity has such and such do thing
-    this way our systems only ever operate on the components used in said systems
+has abstract methods:
 
-    has abstract methods:
+    >>> get_value()
+    >>> set_value(*args, **kwargs)
+        *arg/**kwargs are for the user to implement
+    >>> is_attached()
+        check to see if component is attached to an entity
 
-        >>> get_value()
-
-        >>> set_value(*args, **kwargs)
-            *arg/**kwargs are for the user to implement
-
-        >>> is_attached()
-            check to see if component is attached to an entity
     """
 
     entity_id = None
@@ -110,18 +110,18 @@ class Component:
 
 
 class Entity:
-    """# Entity #
+    """### Entity ###
 
-    Core entity of the ECS system, this class is an intermediary object that links Components with Systems, in a fashion
-    that allows the user to perform operations easily on an entity by entity basis.
+  entity of the ECS system, this class is an intermediary object that links Components with Systems, in a fashion
+  allows the user to perform operations easily on an entity by entity basis.
 
-    This class shouldn't have to be expanded upon as they are composed with components and managed by systems and
-    all attached components become members of the Entity by default
+  class shouldn't have to be expanded upon as they are composed with components and managed by systems and
+  attached components become members of the Entity by default
 
     >>> Entity(*_components)
         *_components = any number of components to be attached to the entity
 
-    >>> attach(*_components)
+     >>> attach(*_components)
         *_componets = a list of component to attach to the entity
 
     >>> detach(*_components)
@@ -131,6 +131,7 @@ class Entity:
         bluprint = a list of component to assign to the entity
         name = the name of the resulting type
         class_dict = a dict of objects to add as members of the class
+
     """
 
     def __init__(self, *_components):
@@ -210,11 +211,11 @@ class Entity:
 
 
 class System(Thread):
-    """# System #
+    """### System ###
 
-    Core System object for the ECS system,
-    this deals in data management and manipulation and only ever operates on a predefined set of components
-    this helps keep data organized, allows for modularization and ease of updating
+  Core System object for the ECS system,
+  this deals in data management and manipulation and only ever operates on a predefined set of components
+  this helps keep data organized, allows for modularization and ease of updating
 
     >>> collect()
         method used to collect components from lists and organize the data for processing
@@ -229,6 +230,7 @@ class System(Thread):
 
     >>> run()
         triggered by start method and runs the update cycle
+
     """
 
     def __init__(self, *managed):
@@ -275,8 +277,10 @@ class System(Thread):
         return f"{self.__class__.__name__}: {[_c.__name__ for _c in self.managed_components]}"
 
 
-__doc__ = """
-Core module that contains the core objects that makes up the ECS system, contains:
+__doc__ = """## Core ##
+
+ Core module that contains the core objects that makes up the ECS system, contains:
+
 """
 
 for c in common.get_class_docs(__name__):
