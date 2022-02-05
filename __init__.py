@@ -17,48 +17,47 @@ __doc__ = "\n\r" f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
 __all__ = ['common', 'events', 'prefabs', 'Entity', 'Component', 'System', 'CoreException']
 
 __todo__ = """
-# Main Todo 
 
  The general idea of this module is to provide a fast, easy to use ECS
  that allows the dynamic creation, modification and cleanup of entities
  and _components, the initial build will be geared towards games, but I
  will later include a UI app ECS as I feel it could be of use there too
 
- todo study into LLVMLite for JIT capabilities, candidates for jit:
-   -> write core thread manager
-   -> write core event manager
-   -> core system functions
-       -> collect
+ ##todo study into LLVMLite for JIT capabilities, candidates for jit:
+    write core thread manager
+    write core event manager
+    core system functions
+        collect
            collect needs to disregard components that are not shared along all lists
-       -> process
+        process
            should be a generic method tto be implemented byy subclasses
 
- todo create common math functions
-   -> various curves, waves and linear functions
-   -> geometry for shape, vert, model, path etc
+ ##todo create common math functions
+    various curves, waves and linear functions
+    geometry for shape, vert, model, path etc
 
- todo create common string functions
-   -> string builders
-   -> string parser
-   -> string randomizer
+ ##todo create common string functions
+    string builders
+    string parser
+    string randomizer
 
- todo render system
-   -> OpenGL or Vulkan? - answer appears to be moderngl?
-   -> *.OBJ loading and manipulation - pywavefront
-   -> procedural mesh generation
-   -> particle engine
-   -> shader engine
+ ##todo render system
+    OpenGL or Vulkan? - answer appears to be moderngl?
+    *.OBJ loading and manipulation - pywavefront
+    procedural mesh generation
+    particle engine
+    shader engine
 
- todo obj capture
-   -> mappings keyboard, mouse, controller
+ ##todo obj capture
+    mappings keyboard, mouse, controller
 
- todo animation system
-   -> skeleton controller
-   -> kinematics
+ ##todo animation system
+    skeleton controller
+    kinematics
 
- todo physics
-   -> colliders
-   -> interactions
+ ##todo physics
+    colliders
+    interactions
 """
 
 
