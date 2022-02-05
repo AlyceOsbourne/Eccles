@@ -17,47 +17,54 @@ __doc__ = "\n\r" f"""{common.__PROJECT_NAME__}: {common.__VERSION_STR__}
 __all__ = ['common', 'events', 'prefabs', 'Entity', 'Component', 'System', 'CoreException']
 
 __todo__ = """
+## TODO
 
  The general idea of this module is to provide a fast, easy to use ECS
  that allows the dynamic creation, modification and cleanup of entities
  and _components, the initial build will be geared towards games, but I
  will later include a UI app ECS as I feel it could be of use there too
 
- ##todo study into LLVMLite for JIT capabilities, candidates for jit:
-    write core thread manager
-    write core event manager
-    core system functions
-        collect
-           collect needs to disregard components that are not shared along all lists
-        process
-           should be a generic method tto be implemented byy subclasses
+* ### Core
+   * JIT capabilities 
+   * write core thread manager
+   * write core event manager
 
- ##todo create common math functions
-    various curves, waves and linear functions
-    geometry for shape, vert, model, path etc
 
- ##todo create common string functions
-    string builders
-    string parser
-    string randomizer
+* ### Math
+   * various curves, waves and linear functions
+   * geometry for shape, vert, model, path etc
+   * interpolations    
 
- ##todo render system
-    OpenGL or Vulkan? - answer appears to be moderngl?
-    *.OBJ loading and manipulation - pywavefront
-    procedural mesh generation
-    particle engine
-    shader engine
 
- ##todo obj capture
-    mappings keyboard, mouse, controller
+* ### Strings
+   * string builders
+   * string parser
+   * string randomizer
 
- ##todo animation system
-    skeleton controller
-    kinematics
 
- ##todo physics
-    colliders
-    interactions
+* ### Render
+   * OpenGL or Vulkan? - answer appears to be moderngl?
+   * particle engine
+   * shader engine
+
+
+* ### Mesh Management
+   * OBJ loading and manipulation - pywavefront
+   * procedural mesh generation
+
+
+* ### Input Capture
+   * mappings keyboard, mouse, controller
+
+
+* ### Animation System
+   * skeleton controller
+   * kinematics
+
+
+* ### Physics
+   * colliders
+   * interactions
 """
 
 
