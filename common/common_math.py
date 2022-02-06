@@ -1,6 +1,5 @@
 import math
 
-
 #########################################################################
 # Math Functions
 #########################################################################
@@ -16,6 +15,7 @@ __doc__ = """### Common Math Functions ###
  script for math functions that will see regular use
  
 """
+
 
 class Vector:
 
@@ -36,7 +36,6 @@ class Vector:
     def __len__(self, magnitude):
         """
         :param magnitude: magnitude to scale vector too
-        :param normalize: whether or not to convert to unit before scale
         """
         if 0 > self.__len__ > 1:
             self.normalize()
@@ -76,7 +75,7 @@ class Vector:
             else other.z
 
     def __str__(self):
-        return f"{self.__class__.__name__}(x={self.x}, y={self.y}, z={self.z})[magnitude={self.__len__}, angle={self.angle_degrees}]"
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y}, z={self.z})[magnitude={self.__len__}, angle={self.angle_degrees}] "
 
     @property
     def angle_radians(self):
@@ -119,19 +118,19 @@ class Vector:
             self.z /= mag
 
     def dot_product(self, other):
-        '''
-        :param other Vector or Tuple[float, float, float]:
-        :return: tuple of the dot product of input
-        '''
+        """
+            :param: other Vector or Tuple[float, float, float]:
+            :return: tuple of the cross product of input
+            """
         a = self.get()
         b = other.get() if isinstance(other, Vector) else other
         return tuple(aterm * bterm for aterm, bterm in zip(a, b))
 
     def cross_product(self, other):
-        '''
-        :param other Vector or Tuple[float, float, float]:
+        """
+        :param: other Vector or Tuple[float, float, float]:
         :return: tuple of the cross product of input
-        '''
+        """
         sx, sy, sz = self.get()
         ox, oy, oz = other.get() if isinstance(other, Vector) else other
         x = sy * oz - sz * oy
