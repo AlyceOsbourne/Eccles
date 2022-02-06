@@ -42,6 +42,7 @@ class CoreException(Exception):
               f" Method: {self.frame}(args = {args},  kwargs = {kwargs}):" + \
               "\n\r->" + \
               f" {self.message} "
+
         super().__init__(out)
 
 
