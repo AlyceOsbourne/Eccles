@@ -11,6 +11,11 @@ import math
 #########################################################################
 from typing import Iterable
 
+__doc__ = """### Common Math Functions ###
+
+ script for math functions that will see regular use
+ 
+"""
 
 class Vector:
 
@@ -51,9 +56,9 @@ class Vector:
             else other[1] if isinstance(other, Iterable) \
             else other.y
 
-        self.x += other if isinstance(other, int) or isinstance(other, float) \
+        self.z += other if isinstance(other, int) or isinstance(other, float) \
             else other[2] if isinstance(other, Iterable) \
-            else other.y
+            else other.z
         return self
 
     def __mul__(self, other):
@@ -66,9 +71,9 @@ class Vector:
             else other[1] if isinstance(other, Iterable) \
             else other.y
 
-        self.x *= other if isinstance(other, int) or isinstance(other, float) \
+        self.z *= other if isinstance(other, int) or isinstance(other, float) \
             else other[2] if isinstance(other, Iterable) \
-            else other.y
+            else other.z
 
     def __str__(self):
         return f"{self.__class__.__name__}(x={self.x}, y={self.y}, z={self.z})[magnitude={self.__len__}, angle={self.angle_degrees}]"
@@ -113,8 +118,26 @@ class Vector:
             self.y /= mag
             self.z /= mag
 
-    def dot_product(self):
-        pass
+    def dot_product(self, other):
+        '''
+        :param other Vector or Tuple[float, float, float]:
+        :return: tuple of the dot product of input
+        '''
+        a = self.get()
+        b = other.get() if isinstance(other, Vector) else other
+        return tuple(aterm * bterm for aterm, bterm in zip(a, b))
+
+    def cross_product(self, other):
+        '''
+        :param other Vector or Tuple[float, float, float]:
+        :return: tuple of the cross product of input
+        '''
+        sx, sy, sz = self.get()
+        ox, oy, oz = other.get() if isinstance(other, Vector) else other
+        x = sy * oz - sz * oy
+        y = sz * ox - sx * oz
+        z = sx * oy - sy * ox
+        return x, y, z
 
 
 class Matrix:
