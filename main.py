@@ -15,55 +15,55 @@ __doc__ = "\n\r" f"""### {common.__PROJECT_NAME__}: {common.__VERSION_STR__} ###
  
 """
 
-__all__ = ['common', 'events', 'prefabs', 'Entity', 'Component', 'System', 'CoreException']
+__all__ = ['common', 'events', 'prefabs', 'Entity', 'Component', 'System', 'CoreException', "docs"]
 
 __todo__ = """
-## TODO
+## TODO ###
 
  The general idea of this module is to provide a fast, easy to use ECS
  that allows the dynamic creation, modification and cleanup of entities
  and _components, the initial build will be geared towards games, but I
  will later include a UI app ECS as I feel it could be of use there too
 
-* ### Core
+* ### Core ###
    * JIT capabilities 
    * write core thread manager
    * write core event manager
 
 
-* ### Math
+* ### Math ### 
    * various curves, waves and linear functions
    * geometry for shape, vert, model, path etc
    * interpolations    
 
 
-* ### Strings
+* ### Strings ###
    * string builders
    * string parser
    * string randomizer
 
 
-* ### Render
+* ### Render ###
    * OpenGL or Vulkan? - answer appears to be moderngl?
    * particle engine
    * shader engine
 
 
-* ### Mesh Management
+* ### Mesh Management ###
    * OBJ loading and manipulation - pywavefront
    * procedural mesh generation
 
 
-* ### Input Capture
+* ### Input Capture ###
    * mappings keyboard, mouse, controller
 
 
-* ### Animation System
+* ### Animation System ###
    * skeleton controller
    * kinematics
 
 
-* ### Physics
+* ### Physics ###
    * colliders
    * interactions
 """
@@ -73,15 +73,6 @@ def docs():
     return __doc__ + core.core_objects.__doc__ + common.__doc__
 
 
-def _to_wiki():
-    path = "C:\\Users\\Alyce\\PycharmProjects\\Eccles.wiki\\"
-    with open(path + "ECS.md", 'w') as f:
-        f.write(docs())
-
-    with open(path + "TODO.md", 'w') as f:
-        f.write(__todo__)
-
-
 if __name__ == "__main__":
     print(docs())
-    _to_wiki()
+    e = Entity(System)

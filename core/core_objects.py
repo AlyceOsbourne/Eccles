@@ -6,22 +6,12 @@ from threading import Thread
 
 import common
 
-#########################################################################
-# Init
-#########################################################################
 ecs_logger = logging.Logger("ECCLES_LOGGER", level=logging.DEBUG)
 entity_count = count()
 systems = []
 components = {}
 entities = {}
 
-
-#########################################################################
-# ECS Exceptions
-# todo -> Write more comprehensive exception messages,
-#  but will do this once the module is more fleshed
-#  out and I have a better idea of the things that can go wrong
-#########################################################################
 class CoreException(Exception):
     """### CoreException ###
 
@@ -44,15 +34,17 @@ class CoreException(Exception):
         self.message = message
         out = "\n\r" + \
               f"{common.__PROJECT_NAME__} {common.__VERSION_STR__}" + \
-              "\n\r" f"> Object: {self.obj}" "\n\r->" + \
+              "\n\r" + \
+              f" Object: {self.obj.__class__.__name__}" + \
+              "\n\r->" + \
+              f" Variables: {vars(obj)}" + \
+              "\n\r->" + \
               f" Method: {self.frame}(args = {args},  kwargs = {kwargs}):" + \
-              "\n\r-->" f" {self.message} "
+              "\n\r->" + \
+              f" {self.message} "
         super().__init__(out)
 
 
-#########################################################################
-# Core objects
-#########################################################################
 class Component:
     """### Component ###
     
@@ -152,7 +144,8 @@ class Entity:
                 self.__dict__.update({component.__class__.__name__: component})
                 log += f"{component.__class__.__name__}""\n\r"
             else:
-                raise CoreException(component, "This object is not a Component Object, please check your code")
+                raise CoreException(component, "This object is not a Component Object, please check your code",
+                                    *_components)
             ecs_logger.log(logging.DEBUG, log)
         entities[self.entity_id] = self
         return self
