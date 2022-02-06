@@ -75,4 +75,3 @@ def docs():
 
 if __name__ == "__main__":
     print(docs())
-    e = Entity(System)
